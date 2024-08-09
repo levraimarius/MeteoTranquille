@@ -1,0 +1,139 @@
+@import "../../assets/styles/variables";
+
+.weather-container {
+  font-family: Arial, sans-serif;
+  margin: 0 auto;
+  padding: 5rem 10rem 5rem 10rem;
+
+  h1 {
+    color: $text-color;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  .weather-form {
+    display: flex;
+    flex-direction: column;
+
+    .input-container {
+      position: relative;
+
+      input {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box;
+        padding: 0.75rem;
+        width: 100%;
+        padding-right: 40px;
+      }
+    }
+  }
+
+  .suggestions-container {
+    position: relative;
+
+    .loading-spinner-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+    }
+
+    .suggestions {
+      background: $background-color;
+      border: 1px solid #ddd;
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+      box-shadow: $shadow;
+      z-index: 10;
+
+      .suggestion-item {
+        cursor: pointer;
+        padding: 0.75rem;
+        font-size: 0.875rem;
+
+        &:hover {
+          background-color: #f1f1f1;
+        }
+      }
+    }
+  }
+
+  .weather-results {
+    margin-top: 1.5rem;
+
+    h2 {
+      color: #555;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    h3 {
+      margin-top: 1.5rem;
+      font-size: 1.2rem;
+      color: #333;
+    }
+
+    .weather-timeline {
+      display: flex;
+      overflow-x: auto;
+      padding: 10px 0;
+      gap: 1em;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .weather-timeline-item {
+      display: inline-block;
+      padding: 1em;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #fff;
+      text-align: center;
+      min-width: 150px;
+      box-sizing: border-box;
+      height: 150px;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .weather-timeline-time {
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 1rem;
+    }
+
+    .weather-timeline-details {
+      font-size: 14px;
+    }
+
+    .weather-timeline-temperature {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .weather-timeline-description {
+      margin-top: 5px;
+      font-size: 12px;
+    }
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .loading-spinner {
+    animation: spin 1s linear infinite;
+    border: 3px solid rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    border-top: 3px solid $primary-color;
+    height: 20px;
+    width: 20px;
+  }
+}
