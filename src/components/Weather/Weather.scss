@@ -11,12 +11,32 @@ $snowy-gradient: linear-gradient(to right, #e0eafc, #cfdef3);
 // Dégradé de fond de base
 $base-gradient: linear-gradient(to right, #43d0ff97, #2f81eda4);
 
+// Mixin pour les éléments réutilisables
+@mixin box-style {
+  min-width: 160px;
+  min-height: 120px;
+  padding: 15px;
+  border: 1px solid transparent;
+  border-radius: 1em;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+@mixin text-overflow {
+  margin: 5px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 body {
   margin: 0;
   padding: 0;
   color: white;
-  background-image: $base-gradient; // Fond de base
-  transition: background-image 2s ease-in-out; // Transition sur background-image
+  background-image: $base-gradient;
+  transition: background-image 2s ease-in-out;
 
   &.clear-sky {
     background-image: $clear-sky-gradient;
@@ -45,80 +65,92 @@ body {
 }
 
 .weather-container {
-  padding: 20px;
+  padding: 1em 10em;
   text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 20px;
+  }
 
   h1 {
     margin-bottom: 20px;
   }
 
-  input {
-    padding: 10px;
-    width: 100%;
-    box-sizing: border-box;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 1em;
-  }
+  .weather-form {
+    // position: relative;
+    @include box-style;
 
-  ul {
-    list-style: none;
-    padding: 0;
-    text-align: left;
-    max-width: 600px; // Augmentez la largeur maximale pour un meilleur affichage
-    margin: 0 auto;
-
-    li {
+    .input-container {
+      position: relative;
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 15px;
-      border: 1px solid #ccc;
-      border-radius: 1em;
-      margin-bottom: 10px;
-      min-width: 160px; // Largeur fixe mais adaptable pour le contenu
-      min-height: 120px; // Hauteur fixe mais adaptable pour le contenu
-      box-sizing: border-box;
-      cursor: pointer;
-      overflow: hidden; // Assurez-vous que le texte ne dépasse pas les limites
-      text-align: center; // Centre le texte à l'intérieur
+      z-index: 11;
 
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.1);
+      input {
+        padding: 10px;
+        padding-right: 2.5em; // Ajuste la largeur pour inclure l'espace de la loader
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 1em;
       }
 
-      p {
-        margin: 5px 0;
-        overflow: hidden; // Assurez-vous que le texte ne dépasse pas les limites
-        text-overflow: ellipsis; // Ajoute des points de suspension si le texte dépasse
-        white-space: nowrap; // Empêche le texte de se casser sur plusieurs lignes
+      .loading {
+        position: absolute;
+        right: 10px;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(0, 0, 0, 0.3);
+        border-top-color: #000000;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
       }
     }
-  }
 
-  .weather-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.05);
-    justify-content: center;
-    min-width: 160px; // Largeur fixe pour les cases
-    min-height: 120px; // Hauteur fixe pour les cases
-    text-align: center;
-    padding: 15px;
-    border: 1px solid transparent;
-    border-radius: 1em;
-    box-sizing: border-box;
-    overflow: hidden; // Assurez-vous que le texte ne dépasse pas les limites
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      position: absolute;
+      // top: calc(100% + 5px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 30em;
+      z-index: 10;
+      background-color: rgba(0, 0, 0, 0.05);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      display: none;
+
+      &.visible {
+        display: block;
+        margin-top: -10px;
+        padding-top: 11px;
+      }
+
+      li {
+        padding: 10px;
+        cursor: pointer;
+        color: white;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        p {
+          margin: 0;
+        }
+      }
+    }
   }
 
   .weather-info {
     margin-top: 20px;
 
     p {
-      margin: 5px 0;
       font-size: 18px;
+      margin: 5px 0;
     }
   }
 
@@ -127,19 +159,7 @@ body {
   }
 
   .actual-forecast {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.05);
-    justify-content: center;
-    min-width: 160px; // Largeur fixe pour les cases
-    min-height: 120px; // Hauteur fixe pour les cases
-    text-align: center;
-    padding: 15px;
-    border: 1px solid transparent;
-    border-radius: 1em;
-    box-sizing: border-box;
-    overflow: hidden; // Assurez-vous que le texte ne dépasse pas les limites
+    @include box-style;
   }
 
   .hourly-forecast {
@@ -157,35 +177,26 @@ body {
         display: flex;
         gap: 1em;
         padding: 0;
-        margin: 0;
+        margin: 0 0 1em 0;
 
         li {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          background-color: rgba(0, 0, 0, 0.05);
-          justify-content: center;
-          min-width: 160px; // Largeur fixe pour les cases
-          min-height: 120px; // Hauteur fixe pour les cases
-          text-align: center;
-          padding: 15px;
-          border: 1px solid transparent;
-          border-radius: 1em;
-          box-sizing: border-box;
-          overflow: hidden; // Assurez-vous que le texte ne dépasse pas les limites
-
+          padding: 10px;
+          min-width: 100px;
+          @include box-style;
           &:last-child {
             margin-right: 0;
           }
-
           p {
-            margin: 5px 0;
-            overflow: hidden; // Assurez-vous que le texte ne dépasse pas les limites
-            text-overflow: ellipsis; // Ajoute des points de suspension si le texte dépasse
-            white-space: nowrap; // Empêche le texte de se casser sur plusieurs lignes
+            @include text-overflow;
           }
         }
       }
     }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }

@@ -340,15 +340,18 @@ const Weather = () => {
           <FontAwesomeIcon icon={faSun} /> Météo Tranquille
         </h1>
         <p>La météo préférée des français tranquille</p>
-        <input
-          type="text"
-          value={query}
-          onChange={handleChange}
-          placeholder="Entrez un nom de ville ou un code postal"
-        />
-        {status === "loading" && <p>Chargement...</p>}
+        <div className="input-container">
+          <input
+            type="text"
+            value={query}
+            onChange={handleChange}
+            placeholder="Entrez un nom de ville ou un code postal"
+          />
+          {status === "loading" && <div className="loading"></div>}
+        </div>
+
         {error && <p className="error-message">{error}</p>}
-        <ul>
+        <ul className={suggestions.length > 0 ? "visible" : ""}>
           {suggestions.map((suggestion) => (
             <li
               key={suggestion.id}
@@ -371,11 +374,11 @@ const Weather = () => {
                 <p>{getWeatherDescription(data.current_weather.weathercode)}</p>
                 <p>
                   <FontAwesomeIcon icon={faTemperatureThreeQuarters} />{" "}
-                  Température : {data.current_weather.temperature}°C
+                  {data.current_weather.temperature}{data.current_weather_units.temperature}
                 </p>
                 <p>
-                  <FontAwesomeIcon icon={faWind} /> Vent :{" "}
-                  {data.current_weather.windspeed} km/h
+                  <FontAwesomeIcon icon={faWind} />{" "}
+                  {data.current_weather.windspeed}{data.current_weather_units.windspeed}
                 </p>
               </>
             )}
@@ -395,7 +398,7 @@ const Weather = () => {
                       <p>
                         {getWeatherDescription(data.hourly.weathercode[index])}
                       </p>
-                      <p>{data.hourly.temperature[index]}°C</p>
+                      <p>{data.hourly.temperature[index]}{data.current_weather_units.temperature}</p>
                     </li>
                   ))}
                 </ul>
