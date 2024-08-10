@@ -1,8 +1,6 @@
 @import "./variables";
 
 body {
-  background-color: $background-color;
-  color: $text-color;
   margin: 0;
   font-family: "Roboto", sans-serif;
   font-weight: 400;
@@ -10,14 +8,15 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 2px;
+  height: 0.5em;
+  width: 0.5em;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: $white;
   border-radius: 0.2em;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #ffffff;
 }

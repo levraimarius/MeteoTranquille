@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import axios from "axios";
 import "./Weather.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -140,6 +140,7 @@ const Weather = () => {
           },
         }
       );
+
       const now = new Date();
       const currentHour = now.getHours();
       const hourlyForecast = response.data.hourly.time;
@@ -148,17 +149,25 @@ const Weather = () => {
         (time) => new Date(time).getHours() === currentHour
       );
 
-      const hourlyData = hourlyForecast.slice(
-        forecastStartIndex,
-        forecastStartIndex + 24
-      );
+      const hourlyData = {
+        time: hourlyForecast.slice(forecastStartIndex, forecastStartIndex + 24),
+        temperature: response.data.hourly.temperature_2m.slice(
+          forecastStartIndex,
+          forecastStartIndex + 24
+        ),
+        weathercode: response.data.hourly.weathercode.slice(
+          forecastStartIndex,
+          forecastStartIndex + 24
+        ),
+        windspeed: response.data.hourly.wind_speed_10m.slice(
+          forecastStartIndex,
+          forecastStartIndex + 24
+        ),
+      };
 
       setData({
         ...response.data,
-        hourly: {
-          ...response.data.hourly,
-          time: hourlyData,
-        },
+        hourly: hourlyData,
       });
       setStatus("succeeded");
     } catch (error) {
@@ -209,57 +218,27 @@ const Weather = () => {
           </>
         );
       case 51:
-        return (
-          <>
-            <FontAwesomeIcon icon={faCloudShowersWater} /> Bruine légère
-          </>
-        );
       case 53:
-        return (
-          <>
-            <FontAwesomeIcon icon={faCloudShowersWater} /> Bruine modérée
-          </>
-        );
       case 55:
         return (
           <>
-            <FontAwesomeIcon icon={faCloudShowersWater} /> Bruine dense
+            <FontAwesomeIcon icon={faCloudShowersWater} /> Bruine
           </>
         );
       case 61:
-        return (
-          <>
-            <FontAwesomeIcon icon={faCloudRain} /> Pluie légère
-          </>
-        );
       case 63:
-        return (
-          <>
-            <FontAwesomeIcon icon={faCloudRain} /> Pluie modérée
-          </>
-        );
       case 65:
         return (
           <>
-            <FontAwesomeIcon icon={faCloudRain} /> Pluie forte
+            <FontAwesomeIcon icon={faCloudRain} /> Pluie
           </>
         );
       case 80:
-        return (
-          <>
-            <FontAwesomeIcon icon={faCloudShowersHeavy} /> Averses légères
-          </>
-        );
       case 81:
-        return (
-          <>
-            <FontAwesomeIcon icon={faCloudShowersHeavy} /> Averses modérées
-          </>
-        );
       case 82:
         return (
           <>
-            <FontAwesomeIcon icon={faCloudShowersHeavy} /> Averses fortes
+            <FontAwesomeIcon icon={faCloudShowersHeavy} /> Averses
           </>
         );
       case 95:
@@ -268,20 +247,25 @@ const Weather = () => {
             <FontAwesomeIcon icon={faBolt} /> Orages
           </>
         );
-      case 96:
-        return (
-          <>
-            <FontAwesomeIcon icon={faBolt} /> Orages avec grêle
-          </>
-        );
       case 99:
         return (
           <>
-            <FontAwesomeIcon icon={faBolt} /> Orages fort avec grêle
+            <FontAwesomeIcon icon={faBolt} /> Violents orages
+          </>
+        );
+      case 85:
+      case 86:
+        return (
+          <>
+            <FontAwesomeIcon icon={faCloudShowersHeavy} /> Neige
           </>
         );
       default:
-        return "Conditions météo inconnues";
+        return (
+          <>
+            <FontAwesomeIcon icon={faSun} /> Ciel clair
+          </>
+        );
     }
   };
 
@@ -311,95 +295,113 @@ const Weather = () => {
     return parts.join(", ");
   };
 
+  // Applique la classe de fond au body
+  const getWeatherBackgroundClass = (weatherCode) => {
+    const body = document.body;
+
+    body.classList.remove(
+      "clear-sky",
+      "partly-cloudy",
+      "cloudy",
+      "foggy",
+      "drizzle",
+      "rainy",
+      "stormy",
+      "snowy"
+    );
+
+    if (weatherCode === 1 || weatherCode === 2)
+      body.classList.add("partly-cloudy");
+    else if (weatherCode === 3) body.classList.add("cloudy");
+    else if (weatherCode >= 45 && weatherCode <= 48)
+      body.classList.add("foggy");
+    else if (weatherCode >= 51 && weatherCode <= 55)
+      body.classList.add("drizzle");
+    else if (weatherCode >= 61 && weatherCode <= 82)
+      body.classList.add("rainy");
+    else if (weatherCode >= 95 && weatherCode <= 99)
+      body.classList.add("stormy");
+    else if (weatherCode >= 85 && weatherCode <= 86)
+      body.classList.add("snowy");
+    else body.classList.add("clear-sky");
+  };
+
+  // Utilisation d'un useEffect pour déclencher la mise à jour du fond du body
+  useEffect(() => {
+    if (data?.current_weather) {
+      getWeatherBackgroundClass(data.current_weather.weathercode);
+    }
+  }, [data?.current_weather]);
+
   return (
     <div className="weather-container">
-      <h1>Météo Tranquille</h1>
-      <p>La météo préférée des français tranquille</p>
-      <form className="weather-form" onSubmit={(e) => e.preventDefault()}>
-        <div className="input-container">
-          <input
-            type="text"
-            value={query}
-            onChange={handleChange}
-            placeholder="Entrez le nom de la ville ou le code postal"
-            aria-label="Rechercher une ville ou un code postal"
-          />
-        </div>
-      </form>
-
-      {error && (
-        <p aria-live="polite" className="error-message">
-          {error}
-        </p>
-      )}
-
-      <div className="suggestions-container">
-        {status === "loading" && (
-          <div className="loading-spinner-wrapper">
-            <div className="loading-spinner"></div>
-          </div>
-        )}
-        {suggestions.length > 0 && status === "succeeded" && (
-          <div className="suggestions" role="listbox">
-            {suggestions.map((suggestion) => (
-              <div
-                key={suggestion.id}
-                className="suggestion-item"
-                role="option"
-                aria-selected={selectedSuggestion?.id === suggestion.id}
-                onClick={() => handleSuggestionClick(suggestion)}
-              >
-                {formatSuggestion(suggestion)}
-              </div>
-            ))}
-          </div>
-        )}
+      <div className="weather-form">
+        <h1>
+          <FontAwesomeIcon icon={faSun} /> Météo Tranquille
+        </h1>
+        <p>La météo préférée des français tranquille</p>
+        <input
+          type="text"
+          value={query}
+          onChange={handleChange}
+          placeholder="Entrez un nom de ville ou un code postal"
+        />
+        {status === "loading" && <p>Chargement...</p>}
+        {error && <p className="error-message">{error}</p>}
+        <ul>
+          {suggestions.map((suggestion) => (
+            <li
+              key={suggestion.id}
+              onClick={() => handleSuggestionClick(suggestion)}
+            >
+              {formatSuggestion(suggestion)}
+            </li>
+          ))}
+        </ul>
       </div>
-
-      {status === "failed" && !error && (
-        <p aria-live="polite" className="error-message">
-          Une erreur est survenue. Veuillez réessayer plus tard.
-        </p>
-      )}
-
-      {data && (
-        <div className="weather-results">
-          <div>
-            <p>
+      {selectedSuggestion && (
+        <div className="weather-info">
+          <div className="actual-forecast">
+            <h2>
               <FontAwesomeIcon icon={faLocationDot} />{" "}
               {selectedSuggestion.city_name}
-            </p>
-            <h2>
-              <FontAwesomeIcon icon={faTemperatureThreeQuarters} />{" "}
-              {data.current_weather.temperature}{" "}
-              {data.current_weather_units.temperature}
             </h2>
-            <p>
-              <FontAwesomeIcon icon={faWind} /> {data.current_weather.windspeed}{" "}
-              {data.current_weather_units.windspeed}
-            </p>
-            <p>{getWeatherDescription(data.current_weather.weathercode)}</p>
+            {data?.current_weather && (
+              <>
+                <p>{getWeatherDescription(data.current_weather.weathercode)}</p>
+                <p>
+                  <FontAwesomeIcon icon={faTemperatureThreeQuarters} />{" "}
+                  Température : {data.current_weather.temperature}°C
+                </p>
+                <p>
+                  <FontAwesomeIcon icon={faWind} /> Vent :{" "}
+                  {data.current_weather.windspeed} km/h
+                </p>
+              </>
+            )}
           </div>
-          <div className="weather-timeline">
-            {data.hourly.time.map((time, index) => (
-              <div key={time} className="weather-timeline-item">
-                <div className="weather-timeline-time">
-                  {new Date(time).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </div>
-                <div className="weather-timeline-details">
-                  <div className="weather-timeline-temperature">
-                    {data.hourly.temperature_2m[index]}°C
-                  </div>
-                  <div className="weather-timeline-description">
-                    {getWeatherDescription(data.hourly.weathercode[index])}
-                  </div>
-                </div>
+          {data?.hourly && (
+            <div className="hourly-forecast">
+              <div className="hourly-forecast-scroll">
+                <ul>
+                  {data.hourly.time.map((time, index) => (
+                    <li key={index}>
+                      <p>
+                        {new Date(time).toLocaleTimeString("fr-FR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                      <p>
+                        {getWeatherDescription(data.hourly.weathercode[index])}
+                      </p>
+                      <p>{data.hourly.temperature[index]}°C</p>
+                    </li>
+                  ))}
+                </ul>
               </div>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
       )}
     </div>
