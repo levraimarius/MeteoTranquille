@@ -29,15 +29,7 @@ const Weather = () => {
   const [error, setError] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  const debounce = (func, delay) => {
-    let timeoutId;
-    return (...args) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => func(...args), delay);
-    };
-  };
-
-  const fetchSuggestions = async (input) => {
+  const fetchSuggestions = useCallback(async (input) => {
     if (!input) {
       setSuggestions([]);
       setError("Veuillez entrer un nom de ville ou un code postal.");
@@ -111,11 +103,15 @@ const Weather = () => {
       );
       setStatus("failed");
     }
-  };
+  }, []);
 
   const debouncedFetchSuggestions = useCallback(
-    debounce(fetchSuggestions, 500),
-    []
+    (...args) => {
+      let timeoutId;
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => fetchSuggestions(...args), 500);
+    },
+    [fetchSuggestions] // Dépendances nécessaires
   );
 
   const handleChange = (e) => {
