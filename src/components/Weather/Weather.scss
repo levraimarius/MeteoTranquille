@@ -178,6 +178,10 @@
       width: 100%;
       z-index: 10;
 
+      &.hidden {
+        display: none;
+      }
+
       &.visible {
         display: block;
         margin-top: -10px;
