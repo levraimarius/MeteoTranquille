@@ -1,2 +1,16 @@
+// Couleurs
 $white: #f5f5f5;
 $black: #333;
+
+// Dégradés de fond pour les différentes conditions météorologiques
+$clear-sky-gradient: linear-gradient(to right, #56ccf2, #2f80ed);
+$partly-cloudy-gradient: linear-gradient(to right, #8894b3, #b8caeb);
+$cloudy-gradient: linear-gradient(to right, #bdc3c7, #2c3e50);
+$foggy-gradient: linear-gradient(to right, #868f96, #596164);
+$drizzle-gradient: linear-gradient(to right, #bdc3c7, #2c3e50);
+$rainy-gradient: linear-gradient(to right, #667db6, #0082c8, #0082c8, #667db6);
+$stormy-gradient: linear-gradient(to right, #3a3a3a, #2c3e50);
+$snowy-gradient: linear-gradient(to right, #e0eafc, #cfdef3);
+
+// Dégradé de fond de base
+$base-gradient: linear-gradient(to right, #43d0ff97, #2f81eda4);

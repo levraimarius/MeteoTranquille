@@ -4,14 +4,18 @@ import "./Weather.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBolt,
+  faClock,
   faCloud,
   faCloudRain,
   faCloudShowersHeavy,
   faCloudShowersWater,
   faCloudSun,
+  faDroplet,
   faLocationDot,
   faSmog,
   faSun,
+  faTemperatureArrowDown,
+  faTemperatureArrowUp,
   faTemperatureThreeQuarters,
   faWind,
 } from "@fortawesome/free-solid-svg-icons";
@@ -23,6 +27,7 @@ const Weather = () => {
   const [data, setData] = useState(null);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   const debounce = (func, delay) => {
     let timeoutId;
@@ -123,10 +128,11 @@ const Weather = () => {
     setQuery(suggestion.city_name);
     setSuggestions([]);
     setSelectedSuggestion(suggestion);
-    await fetchWeather(suggestion.latitude, suggestion.longitude);
+    const timezone = suggestion.timezone;
+    await fetchWeather(suggestion.latitude, suggestion.longitude, timezone);
   };
 
-  const fetchWeather = async (lat, lon) => {
+  const fetchWeather = async (lat, lon, timezone) => {
     setStatus("loading");
     try {
       const response = await axios.get(
@@ -136,7 +142,10 @@ const Weather = () => {
             latitude: lat,
             longitude: lon,
             hourly: "temperature_2m,precipitation,wind_speed_10m,weathercode",
+            daily:
+              "temperature_2m_max,temperature_2m_min,weathercode,precipitation_sum",
             current_weather: true,
+            timezone: timezone,
           },
         }
       );
@@ -145,9 +154,12 @@ const Weather = () => {
       const currentHour = now.getHours();
       const hourlyForecast = response.data.hourly.time;
 
-      const forecastStartIndex = hourlyForecast.findIndex(
+      const currentHourIndex = hourlyForecast.findIndex(
         (time) => new Date(time).getHours() === currentHour
       );
+
+      const forecastStartIndex =
+        currentHourIndex >= 0 ? currentHourIndex + 1 : 0;
 
       const hourlyData = {
         time: hourlyForecast.slice(forecastStartIndex, forecastStartIndex + 24),
@@ -163,11 +175,24 @@ const Weather = () => {
           forecastStartIndex,
           forecastStartIndex + 24
         ),
+        precipitation: response.data.hourly.precipitation.slice(
+          forecastStartIndex,
+          forecastStartIndex + 24
+        ),
+      };
+
+      const dailyData = {
+        time: response.data.daily.time.slice(0, 5),
+        temperature_max: response.data.daily.temperature_2m_max.slice(0, 5),
+        temperature_min: response.data.daily.temperature_2m_min.slice(0, 5),
+        weathercode: response.data.daily.weathercode.slice(0, 5),
+        precipitation_sum: response.data.daily.precipitation_sum.slice(0, 5),
       };
 
       setData({
         ...response.data,
         hourly: hourlyData,
+        daily: dailyData,
       });
       setStatus("succeeded");
     } catch (error) {
@@ -177,6 +202,14 @@ const Weather = () => {
       );
       setStatus("failed");
     }
+  };
+
+  const formatTime = (time, timezone) => {
+    return new Intl.DateTimeFormat("fr-FR", {
+      timeZone: timezone,
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(new Date(time));
   };
 
   const getWeatherDescription = (weatherCode) => {
@@ -218,27 +251,57 @@ const Weather = () => {
           </>
         );
       case 51:
+        return (
+          <>
+            <FontAwesomeIcon icon={faCloudShowersWater} /> Bruine légère
+          </>
+        );
       case 53:
+        return (
+          <>
+            <FontAwesomeIcon icon={faCloudShowersWater} /> Bruine modérée
+          </>
+        );
       case 55:
         return (
           <>
-            <FontAwesomeIcon icon={faCloudShowersWater} /> Bruine
+            <FontAwesomeIcon icon={faCloudShowersWater} /> Bruine dense
           </>
         );
       case 61:
+        return (
+          <>
+            <FontAwesomeIcon icon={faCloudRain} /> Pluie légère
+          </>
+        );
       case 63:
+        return (
+          <>
+            <FontAwesomeIcon icon={faCloudRain} /> Pluie modérée
+          </>
+        );
       case 65:
         return (
           <>
-            <FontAwesomeIcon icon={faCloudRain} /> Pluie
+            <FontAwesomeIcon icon={faCloudRain} /> Pluie forte
           </>
         );
       case 80:
+        return (
+          <>
+            <FontAwesomeIcon icon={faCloudShowersHeavy} /> Averses légères
+          </>
+        );
       case 81:
+        return (
+          <>
+            <FontAwesomeIcon icon={faCloudShowersHeavy} /> Averses modérées
+          </>
+        );
       case 82:
         return (
           <>
-            <FontAwesomeIcon icon={faCloudShowersHeavy} /> Averses
+            <FontAwesomeIcon icon={faCloudShowersHeavy} /> Averses fortes
           </>
         );
       case 95:
@@ -247,25 +310,20 @@ const Weather = () => {
             <FontAwesomeIcon icon={faBolt} /> Orages
           </>
         );
+      case 96:
+        return (
+          <>
+            <FontAwesomeIcon icon={faBolt} /> Orages avec grêle
+          </>
+        );
       case 99:
         return (
           <>
-            <FontAwesomeIcon icon={faBolt} /> Violents orages
-          </>
-        );
-      case 85:
-      case 86:
-        return (
-          <>
-            <FontAwesomeIcon icon={faCloudShowersHeavy} /> Neige
+            <FontAwesomeIcon icon={faBolt} /> Orages fort avec grêle
           </>
         );
       default:
-        return (
-          <>
-            <FontAwesomeIcon icon={faSun} /> Ciel clair
-          </>
-        );
+        return "Conditions météo inconnues";
     }
   };
 
@@ -295,7 +353,6 @@ const Weather = () => {
     return parts.join(", ");
   };
 
-  // Applique la classe de fond au body
   const getWeatherBackgroundClass = (weatherCode) => {
     const body = document.body;
 
@@ -317,21 +374,40 @@ const Weather = () => {
       body.classList.add("foggy");
     else if (weatherCode >= 51 && weatherCode <= 55)
       body.classList.add("drizzle");
-    else if (weatherCode >= 61 && weatherCode <= 82)
+    else if (weatherCode >= 61 && weatherCode <= 65)
       body.classList.add("rainy");
-    else if (weatherCode >= 95 && weatherCode <= 99)
+    else if (weatherCode === 95 || weatherCode === 99)
       body.classList.add("stormy");
-    else if (weatherCode >= 85 && weatherCode <= 86)
+    else if (weatherCode === 85 || weatherCode === 86)
       body.classList.add("snowy");
     else body.classList.add("clear-sky");
   };
 
-  // Utilisation d'un useEffect pour déclencher la mise à jour du fond du body
   useEffect(() => {
     if (data?.current_weather) {
       getWeatherBackgroundClass(data.current_weather.weathercode);
     }
   }, [data?.current_weather]);
+
+  useEffect(() => {
+    const updateClock = () => {
+      setCurrentTime(new Date());
+    };
+
+    updateClock();
+
+    const intervalId = setInterval(updateClock, 60000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    if (selectedSuggestion) {
+      document.title = `Météo Tranquille - ${selectedSuggestion.city_name}`;
+    } else {
+      document.title = "Météo Tranquille";
+    }
+  }, [selectedSuggestion]);
 
   return (
     <div className="weather-container">
@@ -339,7 +415,7 @@ const Weather = () => {
         <h1>
           <FontAwesomeIcon icon={faSun} /> Météo Tranquille
         </h1>
-        <p>La météo préférée des français tranquille</p>
+        <p>La météo préférée des Français : tranquille.</p>
         <div className="input-container">
           <input
             type="text"
@@ -365,24 +441,43 @@ const Weather = () => {
       {selectedSuggestion && (
         <div className="weather-info">
           <div className="actual-forecast">
-            <h2>
-              <FontAwesomeIcon icon={faLocationDot} />{" "}
-              {selectedSuggestion.city_name}
-            </h2>
             {data?.current_weather && (
               <>
-                <p>{getWeatherDescription(data.current_weather.weathercode)}</p>
-                <p>
-                  <FontAwesomeIcon icon={faTemperatureThreeQuarters} />{" "}
-                  {data.current_weather.temperature}{data.current_weather_units.temperature}
-                </p>
-                <p>
-                  <FontAwesomeIcon icon={faWind} />{" "}
-                  {data.current_weather.windspeed}{data.current_weather_units.windspeed}
-                </p>
+                <div>
+                  <p>
+                    <FontAwesomeIcon icon={faTemperatureThreeQuarters} />{" "}
+                    {data.current_weather.temperature}
+                    {data.current_weather_units.temperature}
+                  </p>
+                  <p>
+                    {getWeatherDescription(data.current_weather.weathercode)}
+                  </p>
+                </div>
+                <div>
+                  <p className="city-name">
+                    <FontAwesomeIcon icon={faLocationDot} />{" "}
+                    {selectedSuggestion.city_name}
+                  </p>
+                  <p>
+                    <FontAwesomeIcon icon={faClock} />{" "}
+                    {formatTime(currentTime, selectedSuggestion.timezone)}
+                  </p>
+                </div>
+                <div>
+                  <p>
+                    <FontAwesomeIcon icon={faWind} />{" "}
+                    {data.current_weather.windspeed}
+                    {data.current_weather_units.windspeed}
+                  </p>
+                  <p>
+                    <FontAwesomeIcon icon={faDroplet} />{" "}
+                    {data.current_weather.precipitation || "N/A"} mm
+                  </p>
+                </div>
               </>
             )}
           </div>
+
           {data?.hourly && (
             <div className="hourly-forecast">
               <div className="hourly-forecast-scroll">
@@ -390,15 +485,56 @@ const Weather = () => {
                   {data.hourly.time.map((time, index) => (
                     <li key={index}>
                       <p>
-                        {new Date(time).toLocaleTimeString("fr-FR", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                      <p>
                         {getWeatherDescription(data.hourly.weathercode[index])}
                       </p>
-                      <p>{data.hourly.temperature[index]}{data.current_weather_units.temperature}</p>
+                      <p>
+                        <FontAwesomeIcon icon={faTemperatureThreeQuarters} />{" "}
+                        {data.hourly.temperature[index]}
+                        {data.current_weather_units.temperature}
+                      </p>
+                      <p>
+                        <FontAwesomeIcon icon={faClock} />{" "}
+                        {formatTime(time, selectedSuggestion.timezone)}
+                      </p>
+                      <p>
+                        <FontAwesomeIcon icon={faDroplet} />{" "}
+                        {data.hourly.precipitation[index]} mm
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {data?.daily && (
+            <div className="daily-forecast">
+              <div className="daily-forecast-scroll">
+                <ul>
+                  {data.daily.time.map((time, index) => (
+                    <li key={index}>
+                      <h3>
+                        {new Intl.DateTimeFormat("fr-FR", {
+                          weekday: "long",
+                        }).format(new Date(time))}
+                      </h3>
+                      <p>
+                        <FontAwesomeIcon icon={faTemperatureArrowUp} />{" "}
+                        {data.daily.temperature_max[index]}
+                        {data.current_weather_units.temperature}
+                      </p>
+                      <p>
+                        <FontAwesomeIcon icon={faTemperatureArrowDown} />{" "}
+                        {data.daily.temperature_min[index]}
+                        {data.current_weather_units.temperature}
+                      </p>
+                      <p>
+                        {getWeatherDescription(data.daily.weathercode[index])}
+                      </p>
+                      <p>
+                        <FontAwesomeIcon icon={faDroplet} />{" "}
+                        {data.daily.precipitation_sum[index]} mm
+                      </p>
                     </li>
                   ))}
                 </ul>

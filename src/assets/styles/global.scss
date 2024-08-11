@@ -1,10 +1,40 @@
+@import "./mixin";
 @import "./variables";
 
 body {
   margin: 0;
+  padding: 0;
+  color: white;
+  background-image: $base-gradient;
+  transition: background-image 2s ease-in-out;
   font-family: "Roboto", sans-serif;
   font-weight: 400;
   font-style: normal;
+
+  &.clear-sky {
+    background-image: $clear-sky-gradient;
+  }
+  &.partly-cloudy {
+    background-image: $partly-cloudy-gradient;
+  }
+  &.cloudy {
+    background-image: $cloudy-gradient;
+  }
+  &.foggy {
+    background-image: $foggy-gradient;
+  }
+  &.drizzle {
+    background-image: $drizzle-gradient;
+  }
+  &.rainy {
+    background-image: $rainy-gradient;
+  }
+  &.stormy {
+    background-image: $stormy-gradient;
+  }
+  &.snowy {
+    background-image: $snowy-gradient;
+  }
 }
 
 ::-webkit-scrollbar {
@@ -19,4 +49,9 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #ffffff;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; // Rend le fond sous la barre de défilement transparent
+  border-radius: 0.2em; // Applique un rayon de bordure, similaire au `scrollbar-thumb`
 }

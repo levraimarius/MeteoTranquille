@@ -1,0 +1,18 @@
+// Mixin pour les éléments réutilisables
+@mixin box-style {
+  min-height: 120px;
+  padding: 1em;
+  border: 1px solid transparent;
+  border-radius: 1em;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+@mixin text-overflow {
+  margin: 5px 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
