@@ -1,7 +1,10 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSun } from "@fortawesome/free-solid-svg-icons";
+import "./WeatherForm.scss";
 
+// Ce composant affiche un formulaire de recherche pour entrer une ville ou un code postal.
+// Il gère également les suggestions basées sur l'entrée utilisateur et affiche des messages d'erreur le cas échéant.
 const WeatherForm = ({
   query,
   handleChange,

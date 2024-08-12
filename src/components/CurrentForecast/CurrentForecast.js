@@ -7,7 +7,9 @@ import {
   faWind,
   faDroplet,
 } from "@fortawesome/free-solid-svg-icons";
+import "./CurrentForecast.scss";
 
+// Ce composant affiche la météo actuelle, y compris la température, la vitesse du vent, etc.
 const CurrentForecast = ({
   data,
   selectedSuggestion,

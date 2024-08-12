@@ -1,0 +1,48 @@
+@import "../../assets/styles/global.scss";
+
+.actual-forecast {
+  @include box-style;
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-around;
+
+  @media (max-width: 600px) {
+    align-items: flex-start;
+    flex-direction: column;
+
+    > div:nth-child(2) {
+      order: -1;
+    }
+  }
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    max-width: 200px;
+    min-width: 0;
+
+    @media (max-width: 600px) {
+      align-items: flex-start;
+    }
+  }
+
+  .city-name {
+    font-size: 1.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  h2 {
+    margin: 0;
+  }
+
+  p {
+    margin: 5px 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

@@ -1,8 +1,10 @@
 import axios from "axios";
 
+// URL de base pour les API de géocodage et de météo.
 const BASE_URL = "https://api.open-meteo.com/v1/forecast";
 const GEOCODE_URL = "https://geocoding-api.open-meteo.com/v1/search";
 
+// Fonction pour obtenir les coordonnées géographiques à partir d'un nom de ville.
 export const getGeocode = async (query) => {
   try {
     const response = await axios.get(GEOCODE_URL, {
@@ -23,6 +25,7 @@ export const getGeocode = async (query) => {
   }
 };
 
+// Fonction pour obtenir les données météo à partir des coordonnées géographiques.
 export const fetchWeatherData = async (latitude, longitude) => {
   try {
     const response = await axios.get(BASE_URL, {

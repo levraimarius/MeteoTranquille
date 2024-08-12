@@ -10,6 +10,7 @@ import {
   faSun,
 } from "@fortawesome/free-solid-svg-icons";
 
+// Fonction pour obtenir une description météo et une icône basée sur un code météo spécifique.
 export const getWeatherDescription = (weatherCode) => {
   const weatherDescriptions = {
     0: { icon: faSun, text: "Ciel clair" },
@@ -42,6 +43,7 @@ export const getWeatherDescription = (weatherCode) => {
   );
 };
 
+// Fonction pour formater l'heure en fonction du fuseau horaire.
 export const formatTime = (time, timezone) => {
   return new Intl.DateTimeFormat("fr-FR", {
     timeZone: timezone,
@@ -50,16 +52,19 @@ export const formatTime = (time, timezone) => {
   }).format(new Date(time));
 };
 
+// Fonction pour filtrer les codes postaux, en excluant ceux contenant "CEDEX".
 export const filterPostcodes = (postcodes) => {
   if (!Array.isArray(postcodes)) return [];
   return postcodes.filter((postcode) => !postcode.includes("CEDEX"));
 };
 
+// Fonction pour formater les codes postaux en une chaîne de texte.
 export const formatPostcodes = (postcodes) => {
   if (!Array.isArray(postcodes) || postcodes.length === 0) return "";
   return postcodes.length > 1 ? `${postcodes[0]}...` : postcodes[0];
 };
 
+// Fonction pour formater une suggestion de ville en une chaîne de texte lisible.
 export const formatSuggestion = (suggestion) => {
   const parts = [];
   if (suggestion.city_name) parts.push(suggestion.city_name);

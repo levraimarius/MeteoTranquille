@@ -5,7 +5,9 @@ import {
   faClock,
   faDroplet,
 } from "@fortawesome/free-solid-svg-icons";
+import "./HourlyForecast.scss";
 
+// Ce composant affiche les prévisions horaires.
 const HourlyForecast = ({
   data,
   selectedSuggestion,

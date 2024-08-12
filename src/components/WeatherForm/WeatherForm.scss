@@ -1,0 +1,82 @@
+@import "../../assets/styles/global.scss";
+
+.weather-form {
+  @include box-style;
+
+  .input-container {
+    align-items: center;
+    display: flex;
+    margin: 0 auto;
+    position: relative;
+    width: 30em;
+    z-index: 11;
+
+    @media (max-width: 600px) {
+      width: 246px;
+    }
+
+    input {
+      border: 1px solid #ccc;
+      border-radius: 1em;
+      box-sizing: border-box;
+      padding: 10px;
+      padding-right: 2.5em;
+      width: 100%;
+    }
+
+    .loading {
+      animation: spin 1s linear infinite;
+      border: 2px solid rgba(0, 0, 0, 0.3);
+      border-radius: 50%;
+      border-top-color: #000000;
+      height: 20px;
+      position: absolute;
+      right: 10px;
+      width: 20px;
+    }
+  }
+
+  ul {
+    backdrop-filter: blur(10px);
+    background-color: rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: none;
+    left: 50%;
+    list-style: none;
+    margin: 0;
+    max-width: 30em;
+    padding: 0;
+    position: absolute;
+    transform: translateX(-50%);
+    width: 100%;
+    z-index: 10;
+
+    &.hidden {
+      display: none;
+    }
+
+    &.visible {
+      display: block;
+      margin-top: -10px;
+      padding-top: 11px;
+
+      @media (max-width: 600px) {
+        width: 246px;
+      }
+    }
+
+    li {
+      color: white;
+      cursor: pointer;
+      padding: 10px;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+      }
+
+      p {
+        margin: 0;
+      }
+    }
+  }
+}

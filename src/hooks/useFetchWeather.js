@@ -1,11 +1,13 @@
 import { useState, useCallback } from "react";
 import axios from "axios";
 
+// Custom hook pour récupérer les données météo basées sur la latitude, la longitude et le fuseau horaire.
 export const useFetchWeather = () => {
   const [data, setData] = useState(null);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
 
+  // Fonction pour récupérer les données météo depuis l'API.
   const fetchWeather = useCallback(async (lat, lon, timezone) => {
     setStatus("loading");
     try {
@@ -24,6 +26,7 @@ export const useFetchWeather = () => {
         }
       );
 
+      // Organise les données horaires pour les prochaines 24 heures.
       const now = new Date();
       const currentHour = now.getHours();
       const hourlyForecast = response.data.hourly.time;
@@ -55,6 +58,7 @@ export const useFetchWeather = () => {
         ),
       };
 
+      // Organise les données journalières pour les 5 prochains jours.
       const dailyData = {
         time: response.data.daily.time.slice(0, 5),
         temperature_max: response.data.daily.temperature_2m_max.slice(0, 5),

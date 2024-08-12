@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "./Weather.scss";
 import WeatherForm from "../WeatherForm/WeatherForm";
 import CurrentWeather from "../CurrentForecast/CurrentForecast";
 import HourlyForecast from "../HourlyForecast/HourlyForecast";
@@ -11,13 +10,16 @@ import {
   getWeatherDescription,
   formatSuggestion,
 } from "../../utils/weatherUtils";
+import "./Weather.scss";
 
+// Composant principal qui regroupe le formulaire de recherche et les prévisions météo.
 const Weather = () => {
   const [query, setQuery] = useState("");
   const [selectedSuggestion, setSelectedSuggestion] = useState(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [suggestions, setSuggestions] = useState([]);
 
+  // Utilisation des hooks personnalisés pour récupérer les suggestions et la météo.
   const {
     suggestions: fetchedSuggestions,
     fetchSuggestions,
@@ -72,6 +74,7 @@ const Weather = () => {
     return weatherClasses[weatherCode] || "unknown";
   };
 
+  // Change la classe CSS du body en fonction du code météo actuel.
   useEffect(() => {
     if (data?.current_weather) {
       const weatherClass = getWeatherClass(data.current_weather.weathercode);
@@ -79,6 +82,7 @@ const Weather = () => {
     }
   }, [data?.current_weather]);
 
+  // Met à jour l'heure chaque minute.
   useEffect(() => {
     const updateClock = () => {
       setCurrentTime(new Date());
@@ -89,6 +93,7 @@ const Weather = () => {
     return () => clearInterval(intervalId);
   }, []);
 
+  // Met à jour le titre de la page avec le nom de la ville sélectionnée.
   useEffect(() => {
     document.title = selectedSuggestion
       ? `Météo Tranquille - ${selectedSuggestion.city_name}`

@@ -5,7 +5,9 @@ import {
   faTemperatureArrowDown,
   faDroplet,
 } from "@fortawesome/free-solid-svg-icons";
+import "./DailyForecast.scss";
 
+// Ce composant affiche les prévisions quotidiennes.
 const DailyForecast = ({ data, getWeatherDescription }) => (
   <div className="daily-forecast">
     <div className="daily-forecast-scroll">

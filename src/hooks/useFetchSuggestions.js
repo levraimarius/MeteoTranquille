@@ -1,11 +1,13 @@
 import { useState, useCallback } from "react";
 import axios from "axios";
 
+// Custom hook pour récupérer les suggestions de villes en fonction de l'entrée utilisateur.
 export const useFetchSuggestions = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [status, setStatus] = useState("idle");
   const [error, setError] = useState(null);
 
+  // Fonction pour récupérer les suggestions depuis l'API.
   const fetchSuggestions = useCallback(async (input) => {
     if (!input) {
       setSuggestions([]);
@@ -24,6 +26,7 @@ export const useFetchSuggestions = () => {
         }
       );
 
+      // Filtre et organise les suggestions pour s'assurer qu'elles sont uniques.
       const uniqueSuggestions = new Map();
       response.data.results.forEach((item) => {
         const {
@@ -51,6 +54,7 @@ export const useFetchSuggestions = () => {
         }
       });
 
+      // Trie les suggestions par pays, en priorisant la France.
       const suggestionsArray = Array.from(uniqueSuggestions.values());
       suggestionsArray.sort((a, b) => {
         if (a.country === "France" && b.country !== "France") return -1;

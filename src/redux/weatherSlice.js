@@ -1,14 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getGeocode, fetchWeatherData } from "../services/weatherService";
 
+// Thunk asynchrone pour récupérer les données météo en utilisant Redux Toolkit.
 export const fetchWeather = createAsyncThunk(
   "weather/fetchWeather",
   async ({ query }, thunkAPI) => {
     try {
-      // Obtenir les coordonnées
       const { latitude, longitude } = await getGeocode(query);
-
-      // Obtenir les données météo
       const weatherData = await fetchWeatherData(latitude, longitude);
       return weatherData;
     } catch (error) {
@@ -17,6 +15,7 @@ export const fetchWeather = createAsyncThunk(
   }
 );
 
+// Création d'un slice Redux pour gérer l'état de la météo.
 const weatherSlice = createSlice({
   name: "weather",
   initialState: {
