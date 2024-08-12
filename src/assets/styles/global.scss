@@ -1,15 +1,24 @@
 @import "./mixin";
 @import "./variables";
 
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
 body {
   margin: 0;
   padding: 0;
   color: white;
   background-image: $base-gradient;
+  background-size: cover;
+  background-attachment: fixed;
   transition: background-image 2s ease-in-out;
   font-family: "Roboto", sans-serif;
   font-weight: 400;
   font-style: normal;
+  min-height: 100vh;
 
   &.clear-sky {
     background-image: $clear-sky-gradient;
