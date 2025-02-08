@@ -2,7 +2,11 @@
 import { useTransition } from "@vueuse/core";
 import { onMounted, onUnmounted, ref, computed } from "vue";
 import axios from "axios";
-import type { WeatherData, ForecastData } from "../types/weather";
+import type {
+  WeatherData,
+  ForecastData,
+  DailyForecast,
+} from "../types/weather";
 import WeatherIcon from "./WeatherIcon.vue";
 
 const props = defineProps<{
@@ -15,11 +19,6 @@ const forecastError = ref<string | null>(null);
 const hourlyForecastScroll = ref<HTMLDivElement | null>(null);
 const dailyForecastScroll = ref<HTMLDivElement | null>(null);
 const dailyForecast = ref<DailyForecast[]>([]);
-
-const showNavButtons = computed(() => {
-  if (typeof window === "undefined") return false;
-  return window.innerWidth >= 1024;
-});
 
 function handleResize() {
   if (typeof window === "undefined") return;
@@ -138,23 +137,6 @@ function formatDay(timestamp: number): string {
     weekday: "long",
     day: "numeric",
   });
-}
-
-function getMoonPhase(timestamp: number): string {
-  const LUNAR_MONTH = 29.53059; // Durée moyenne d'un cycle lunaire en jours
-  const KNOWN_NEW_MOON = 1692741600; // Timestamp d'une nouvelle lune connue (22 août 2023)
-
-  const daysSinceNewMoon = (timestamp - KNOWN_NEW_MOON) / (24 * 3600);
-  const phase = (daysSinceNewMoon % LUNAR_MONTH) / LUNAR_MONTH;
-
-  if (phase < 0.125) return "Nouvelle lune 🌑";
-  if (phase < 0.25) return "Premier croissant 🌒";
-  if (phase < 0.375) return "Premier quartier 🌓";
-  if (phase < 0.5) return "Lune gibbeuse croissante 🌔";
-  if (phase < 0.625) return "Pleine lune 🌕";
-  if (phase < 0.75) return "Lune gibbeuse décroissante 🌖";
-  if (phase < 0.875) return "Dernier quartier 🌗";
-  return "Dernier croissant 🌘";
 }
 
 const temperature = useTransition(props.weather.main.temp);
