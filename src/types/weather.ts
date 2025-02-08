@@ -81,3 +81,28 @@ export interface DailyForecast extends ForecastData {
   speed: number;
   pop?: number;
 }
+
+export interface ForecastApiResponse {
+  list: {
+    dt: number;
+    main: {
+      temp: number;
+      feels_like: number;
+      pressure: number;
+      humidity: number;
+      temp_min: number;
+      temp_max: number;
+    };
+    weather: Array<{
+      main: string;
+      description: string;
+    }>;
+    wind: {
+      speed: number;
+      deg: number;
+      gust?: number;
+    };
+    pop: number;
+    dt_txt: string;
+  }[];
+}

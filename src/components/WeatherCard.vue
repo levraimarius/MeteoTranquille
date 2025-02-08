@@ -6,6 +6,7 @@ import type {
   WeatherData,
   ForecastData,
   DailyForecast,
+  ForecastApiResponse,
 } from "../types/weather";
 import WeatherIcon from "./WeatherIcon.vue";
 
@@ -60,7 +61,7 @@ async function getForecast() {
     forecastLoading.value = true;
     forecastError.value = null;
 
-    const response = await axios.get(
+    const response = await axios.get<ForecastApiResponse>(
       `https://api.openweathermap.org/data/2.5/forecast`,
       {
         params: {
@@ -73,19 +74,19 @@ async function getForecast() {
     );
 
     // Prévisions horaires (24h)
-    forecast.value = response.data.list.slice(0, 8);
+    forecast.value = response.data.list.slice(0, 8) as ForecastData[];
 
     // Prévisions journalières (7 jours)
-    const dailyData = response.data.list.reduce(
-      (acc: DailyForecast[], curr: any) => {
+    const dailyData = response.data.list.reduce<DailyForecast[]>(
+      (acc, curr) => {
         const date = new Date(curr.dt * 1000).toLocaleDateString();
-        const accObj: Record<string, DailyForecast> = acc.reduce(
+        const accObj = acc.reduce<Record<string, DailyForecast>>(
           (obj, item) => {
             const itemDate = new Date(item.dt * 1000).toLocaleDateString();
             obj[itemDate] = item;
             return obj;
           },
-          {} as Record<string, DailyForecast>
+          {}
         );
 
         if (!accObj[date]) {
@@ -100,7 +101,7 @@ async function getForecast() {
             weather: curr.weather,
             wind: curr.wind,
             speed: curr.wind.speed,
-            pop: curr.pop || 0,
+            pop: curr.pop ?? 0,
             dt_txt: curr.dt_txt,
           };
           acc.push(newForecast);
@@ -119,16 +120,16 @@ async function getForecast() {
             existingForecast.weather = curr.weather;
           }
           existingForecast.pop = Math.max(
-            existingForecast.pop || 0,
-            curr.pop || 0
+            existingForecast.pop ?? 0,
+            curr.pop ?? 0
           );
         }
         return acc;
       },
-      [] as DailyForecast[]
+      []
     );
 
-    dailyForecast.value = Object.values(dailyData).slice(0, 7);
+    dailyForecast.value = dailyData.slice(0, 7);
   } catch (e) {
     forecastError.value = "Impossible de récupérer les prévisions";
   } finally {

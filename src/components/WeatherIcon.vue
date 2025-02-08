@@ -1,11 +1,7 @@
 <script setup lang="ts">
-const props = defineProps<{
+const { type } = defineProps<{
   type: string;
 }>();
-
-defineExpose({
-  getWeatherIcon,
-});
 
 function getWeatherIcon(type: string) {
   const weatherType = type.toLowerCase();
@@ -50,6 +46,10 @@ function getWeatherIcon(type: string) {
     <path stroke-linecap="round" stroke-width="2" d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
   </svg>`;
 }
+
+defineExpose({
+  getWeatherIcon,
+});
 </script>
 
 <template>
