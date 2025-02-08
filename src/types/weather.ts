@@ -74,6 +74,9 @@ export interface DailyForecast extends ForecastData {
     min: number;
     max: number;
     day: number;
+    night?: number;
+    eve?: number;
+    morn?: number;
   };
   speed: number;
   pop?: number;

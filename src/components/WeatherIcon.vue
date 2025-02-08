@@ -1,7 +1,11 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   type: string;
 }>();
+
+defineExpose({
+  getWeatherIcon,
+});
 
 function getWeatherIcon(type: string) {
   const weatherType = type.toLowerCase();

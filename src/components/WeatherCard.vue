@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useTransition } from "@vueuse/core";
-import { onMounted, onUnmounted, ref, computed } from "vue";
+import { onMounted, onUnmounted, ref, type Ref } from "vue";
 import axios from "axios";
 import type {
   WeatherData,
@@ -18,7 +18,7 @@ const forecastLoading = ref(true);
 const forecastError = ref<string | null>(null);
 const hourlyForecastScroll = ref<HTMLDivElement | null>(null);
 const dailyForecastScroll = ref<HTMLDivElement | null>(null);
-const dailyForecast = ref<DailyForecast[]>([]);
+const dailyForecast: Ref<DailyForecast[]> = ref([]);
 
 function handleResize() {
   if (typeof window === "undefined") return;
@@ -76,53 +76,57 @@ async function getForecast() {
     forecast.value = response.data.list.slice(0, 8);
 
     // Prévisions journalières (7 jours)
-    const dailyData = response.data.list.reduce((acc: any[], curr: any) => {
-      const date = new Date(curr.dt * 1000).toLocaleDateString();
-      const accObj = acc.reduce(
-        (obj: { [key: string]: DailyForecast }, item) => {
-          const itemDate = new Date(item.dt * 1000).toLocaleDateString();
-          obj[itemDate] = item;
-          return obj;
-        },
-        {} as { [key: string]: DailyForecast }
-      );
-
-      if (!accObj[date]) {
-        acc.push({
-          dt: curr.dt,
-          main: curr.main,
-          temp: {
-            min: curr.main.temp,
-            max: curr.main.temp,
-            day: curr.main.temp,
+    const dailyData = response.data.list.reduce(
+      (acc: DailyForecast[], curr: any) => {
+        const date = new Date(curr.dt * 1000).toLocaleDateString();
+        const accObj: Record<string, DailyForecast> = acc.reduce(
+          (obj, item) => {
+            const itemDate = new Date(item.dt * 1000).toLocaleDateString();
+            obj[itemDate] = item;
+            return obj;
           },
-          weather: curr.weather,
-          wind: curr.wind,
-          speed: curr.wind.speed,
-          pop: curr.pop || 0,
-          dt_txt: curr.dt_txt,
-        });
-      } else {
-        const existingForecast = accObj[date];
-        existingForecast.temp.min = Math.min(
-          existingForecast.temp.min,
-          curr.main.temp
+          {} as Record<string, DailyForecast>
         );
-        existingForecast.temp.max = Math.max(
-          existingForecast.temp.max,
-          curr.main.temp
-        );
-        if (new Date(curr.dt * 1000).getHours() === 12) {
-          existingForecast.temp.day = curr.main.temp;
-          existingForecast.weather = curr.weather;
+
+        if (!accObj[date]) {
+          const newForecast: DailyForecast = {
+            dt: curr.dt,
+            main: curr.main,
+            temp: {
+              min: curr.main.temp,
+              max: curr.main.temp,
+              day: curr.main.temp,
+            },
+            weather: curr.weather,
+            wind: curr.wind,
+            speed: curr.wind.speed,
+            pop: curr.pop || 0,
+            dt_txt: curr.dt_txt,
+          };
+          acc.push(newForecast);
+        } else {
+          const existingForecast = accObj[date];
+          existingForecast.temp.min = Math.min(
+            existingForecast.temp.min,
+            curr.main.temp
+          );
+          existingForecast.temp.max = Math.max(
+            existingForecast.temp.max,
+            curr.main.temp
+          );
+          if (new Date(curr.dt * 1000).getHours() === 12) {
+            existingForecast.temp.day = curr.main.temp;
+            existingForecast.weather = curr.weather;
+          }
+          existingForecast.pop = Math.max(
+            existingForecast.pop || 0,
+            curr.pop || 0
+          );
         }
-        existingForecast.pop = Math.max(
-          existingForecast.pop || 0,
-          curr.pop || 0
-        );
-      }
-      return acc;
-    }, [] as DailyForecast[]);
+        return acc;
+      },
+      [] as DailyForecast[]
+    );
 
     dailyForecast.value = Object.values(dailyData).slice(0, 7);
   } catch (e) {
