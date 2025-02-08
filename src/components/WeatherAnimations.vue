@@ -223,9 +223,7 @@ onUnmounted(() => {
   if (cloudInterval) {
     clearInterval(cloudInterval);
   }
-  elements.forEach((element) => {
-    element.remove();
-  });
+  elements.forEach((element) => element.remove());
   if (sunElement.value) {
     sunElement.value.remove();
   }

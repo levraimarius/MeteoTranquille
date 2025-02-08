@@ -16,15 +16,13 @@ const hourlyForecastScroll = ref<HTMLDivElement | null>(null);
 const dailyForecastScroll = ref<HTMLDivElement | null>(null);
 const dailyForecast = ref<DailyForecast[]>([]);
 
-const showNavButtons = ref(false);
-showNavButtons.value = computed(() => {
+const showNavButtons = computed(() => {
   if (typeof window === "undefined") return false;
   return window.innerWidth >= 1024;
-}).value;
+});
 
 function handleResize() {
   if (typeof window === "undefined") return;
-  showNavButtons.value = window.innerWidth >= 1024;
 }
 
 onMounted(() => {
@@ -81,8 +79,8 @@ async function getForecast() {
     // Prévisions journalières (7 jours)
     const dailyData = response.data.list.reduce((acc: any[], curr: any) => {
       const date = new Date(curr.dt * 1000).toLocaleDateString();
-      const accObj: { [key: string]: DailyForecast } = acc.reduce(
-        (obj, item) => {
+      const accObj = acc.reduce(
+        (obj: { [key: string]: DailyForecast }, item) => {
           const itemDate = new Date(item.dt * 1000).toLocaleDateString();
           obj[itemDate] = item;
           return obj;
@@ -100,8 +98,10 @@ async function getForecast() {
             day: curr.main.temp,
           },
           weather: curr.weather,
+          wind: curr.wind,
           speed: curr.wind.speed,
           pop: curr.pop || 0,
+          dt_txt: curr.dt_txt,
         });
       } else {
         const existingForecast = accObj[date];
