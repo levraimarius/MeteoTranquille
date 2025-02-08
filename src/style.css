@@ -43,7 +43,7 @@
 
 /* Animation de l'éclair */
 .lightning {
-  @apply absolute h-full w-1 bg-white;
+  @apply absolute w-1 h-full bg-white;
   box-shadow: 0 0 150px 75px rgba(255, 255, 255, 0.9);
   transition: opacity 0.1s;
 }
@@ -62,7 +62,7 @@
 
 .cloud:before,
 .cloud:after {
-  content: '';
+  content: "";
   position: absolute;
   background: inherit;
   border-radius: 50%;
@@ -107,7 +107,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
     opacity: 0.8;
   }

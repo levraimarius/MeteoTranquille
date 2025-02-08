@@ -39,6 +39,18 @@ export interface WeatherData {
   population?: number;
 }
 
+export interface CityData {
+  nom: string;
+  code: string;
+  codeDepartement: string;
+  departement: {
+    nom: string;
+  };
+  region: {
+    nom: string;
+  };
+}
+
 export interface ForecastData {
   dt: number;
   main: {
@@ -56,20 +68,16 @@ export interface ForecastData {
   dt_txt: string;
 }
 
-export interface DailyForecast {
+export interface DailyForecast extends ForecastData {
   dt: number;
   temp: {
     min: number;
     max: number;
-    day: number;
-    night: number;
-    eve: number;
-    morn: number;
+    day?: number;
+    night?: number;
+    eve?: number;
+    morn?: number;
   };
-  weather: Array<{
-    main: string;
-    description: string;
-  }>;
   speed: number;
   pop?: number;
 }
