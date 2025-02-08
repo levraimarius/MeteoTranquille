@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.weather-background {
+  @apply fixed inset-0 transition-colors duration-1000;
+}
+
+.weather-background.clear {
+  @apply bg-gradient-to-br from-blue-400 to-blue-600;
+}
+
+.weather-background.clouds {
+  @apply bg-gradient-to-br from-gray-400 to-gray-600;
+}
+
+.weather-background.rain {
+  @apply bg-gradient-to-br from-gray-700 to-blue-900;
+}
+
+.weather-background.thunderstorm {
+  @apply bg-gradient-to-br from-gray-900 to-purple-950;
+}
+
+.weather-background.snow {
+  @apply bg-gradient-to-br from-blue-200 to-gray-400;
+}
+
+/* Animation des gouttes de pluie */
+.rain-drop {
+  @apply absolute w-0.5 bg-white/30 rounded-full;
+  animation: rain linear infinite;
+}
+
+@keyframes rain {
+  0% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+/* Animation de l'éclair */
+.lightning {
+  @apply absolute h-full w-1 bg-white;
+  box-shadow: 0 0 150px 75px rgba(255, 255, 255, 0.9);
+  transition: opacity 0.1s;
+}
+
+/* Style des nuages */
+.cloud {
+  @apply absolute;
+  width: 150px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  position: absolute;
+  will-change: transform;
+  pointer-events: none;
+}
+
+.cloud:before,
+.cloud:after {
+  content: '';
+  position: absolute;
+  background: inherit;
+  border-radius: 50%;
+}
+
+.cloud:before {
+  width: 90px;
+  height: 90px;
+  top: -35px;
+  left: 25px;
+}
+
+.cloud:after {
+  width: 55px;
+  height: 55px;
+  top: -20px;
+  left: 80px;
+}
+
+/* Style du soleil et de ses rayons */
+.sun {
+  @apply absolute;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 220, 100, 0.8);
+  border-radius: 50%;
+  top: 40px;
+  right: 40px;
+  box-shadow: 0 0 100px rgba(255, 220, 100, 0.6);
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.sun-ray {
+  @apply absolute;
+  width: 140%;
+  height: 3px;
+  background: linear-gradient(90deg, rgba(255, 220, 100, 0.8), transparent);
+  top: 50%;
+  left: 100%;
+  transform-origin: left;
+  animation: rotate 10s linear infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animation des flocons de neige */
+.snow-flake {
+  @apply absolute text-white/70;
+  animation: snow linear infinite;
+}
+
+@keyframes snow {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+  }
+}
