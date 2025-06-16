@@ -2,179 +2,244 @@
 @tailwind components;
 @tailwind utilities;
 
-.weather-background {
-  @apply fixed inset-0 transition-colors duration-1000;
+/* Arrière-plans météo fluides et modernes */
+.weather-background-modern {
+  @apply fixed inset-0 transition-all duration-[2000ms] ease-in-out;
+  background-attachment: fixed;
 }
 
-.weather-background.clear {
-  @apply bg-gradient-to-br from-sky-300 via-blue-400 to-indigo-500;
+.weather-background-modern.clear {
+  background: 
+    radial-gradient(circle at 85% 15%, rgba(255, 235, 120, 0.3) 0%, transparent 40%),
+    linear-gradient(135deg, 
+      rgba(135, 206, 235, 0.8) 0%, 
+      rgba(70, 130, 180, 0.9) 30%, 
+      rgba(30, 144, 255, 0.95) 70%, 
+      rgba(0, 100, 200, 1) 100%
+    );
 }
 
-.weather-background.clouds {
-  @apply bg-gradient-to-br from-slate-300 via-gray-400 to-slate-500;
+.weather-background-modern.clouds {
+  background: 
+    linear-gradient(135deg,
+      rgba(176, 196, 222, 0.9) 0%,
+      rgba(119, 136, 153, 0.95) 40%,
+      rgba(105, 105, 105, 1) 100%
+    );
 }
 
-.weather-background.rain {
-  @apply bg-gradient-to-br from-slate-600 via-blue-700 to-indigo-800;
+.weather-background-modern.rain {
+  background: 
+    linear-gradient(135deg,
+      rgba(75, 85, 99, 0.95) 0%,
+      rgba(55, 65, 81, 1) 50%,
+      rgba(31, 41, 55, 1) 100%
+    );
 }
 
-.weather-background.thunderstorm {
-  @apply bg-gradient-to-br from-slate-800 via-purple-900 to-indigo-950;
+.weather-background-modern.thunderstorm {
+  background: 
+    linear-gradient(135deg,
+      rgba(55, 65, 81, 1) 0%,
+      rgba(31, 41, 55, 1) 40%,
+      rgba(17, 24, 39, 1) 80%,
+      rgba(0, 0, 0, 0.95) 100%
+    );
 }
 
-.weather-background.snow {
-  @apply bg-gradient-to-br from-blue-100 via-slate-200 to-blue-300;
+.weather-background-modern.snow {
+  background: 
+    linear-gradient(135deg,
+      rgba(240, 248, 255, 0.9) 0%,
+      rgba(176, 196, 222, 0.95) 30%,
+      rgba(135, 206, 235, 1) 70%,
+      rgba(100, 149, 237, 1) 100%
+    );
 }
 
-/* Glassmorphisme moderne */
+/* Glassmorphisme moderne et optimisé */
 .glass-card {
-  @apply bg-white/15 backdrop-blur-xl border border-white/20 shadow-xl;
+  @apply bg-white/10 backdrop-blur-2xl border border-white/15;
   box-shadow: 
-    0 8px 32px rgba(255, 255, 255, 0.1),
-    0 4px 16px rgba(255, 255, 255, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .glass-nav {
-  @apply bg-white/10 backdrop-blur-2xl border-b border-white/20;
+  @apply bg-white/8 backdrop-blur-3xl border-b border-white/15;
   box-shadow: 
-    0 4px 24px rgba(255, 255, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 4px 24px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .glass-input {
-  @apply bg-white/20 backdrop-blur-xl border border-white/30 text-white placeholder-white/80;
+  @apply bg-white/15 backdrop-blur-xl border border-white/25 text-white placeholder-white/70;
   box-shadow: 
-    0 4px 16px rgba(255, 255, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    0 4px 16px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .glass-button {
-  @apply bg-white/20 backdrop-blur-xl border border-white/30 hover:bg-white/30 transition-all duration-300;
+  @apply bg-white/12 backdrop-blur-xl border border-white/20 transition-all duration-300;
   box-shadow: 
-    0 4px 16px rgba(255, 255, 255, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.glass-button:hover {
+  @apply bg-white/20;
+  transform: translateY(-1px);
+  box-shadow: 
+    0 6px 20px rgba(0, 0, 0, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .glass-suggestion {
-  @apply bg-white/95 backdrop-blur-xl border border-white/40;
+  @apply bg-white/95 backdrop-blur-2xl border border-white/30;
   box-shadow: 
-    0 12px 48px rgba(0, 0, 0, 0.1),
-    0 4px 16px rgba(0, 0, 0, 0.05);
+    0 12px 48px rgba(0, 0, 0, 0.08),
+    0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
-/* Textes modernes */
+/* Textes avec meilleur contraste */
 .text-modern-primary {
-  @apply text-white drop-shadow-sm;
+  @apply text-white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .text-modern-secondary {
-  @apply text-white/80 drop-shadow-sm;
+  @apply text-white/85;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
 .text-modern-accent {
-  @apply text-white/60 drop-shadow-sm;
+  @apply text-white/70;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-/* Animation des gouttes de pluie */
-.rain-drop {
-  @apply absolute w-0.5 bg-white/40 rounded-full;
-  animation: rain linear infinite;
-  box-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+/* Animations de pluie modernes et fluides */
+.rain-drop-modern {
+  @apply absolute rounded-full;
+  background: linear-gradient(180deg, 
+    rgba(135, 206, 235, 0.6) 0%, 
+    rgba(70, 130, 180, 0.4) 50%,
+    rgba(135, 206, 235, 0.2) 100%
+  );
+  animation: rain-modern linear infinite;
+  filter: blur(0.5px);
+  will-change: transform;
 }
 
-@keyframes rain {
+@keyframes rain-modern {
   0% {
-    transform: translateY(-10px);
+    transform: translateY(-20px) translateX(0);
     opacity: 0;
   }
-  10% {
+  5% {
     opacity: 1;
   }
-  90% {
+  95% {
     opacity: 1;
   }
   100% {
-    transform: translateY(100vh);
+    transform: translateY(calc(100vh + 20px)) translateX(10px);
     opacity: 0;
   }
 }
 
-/* Animation de l'éclair */
-.lightning {
-  @apply absolute w-1 h-full bg-white;
+/* Éclairs subtils et réalistes */
+.lightning-modern {
+  @apply absolute h-full;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(173, 216, 230, 0.8) 30%,
+    rgba(135, 206, 235, 0.6) 100%
+  );
+  filter: blur(1px);
   box-shadow: 
-    0 0 100px 40px rgba(255, 255, 255, 0.8),
-    0 0 200px 80px rgba(255, 255, 255, 0.4);
-  transition: opacity 0.1s;
+    0 0 20px rgba(255, 255, 255, 0.6),
+    0 0 40px rgba(173, 216, 230, 0.4),
+    0 0 80px rgba(135, 206, 235, 0.2);
 }
 
-/* Style des nuages modernes */
-.cloud {
+/* Nuages fluides et naturels */
+.cloud-modern {
   @apply absolute;
-  width: 160px;
-  height: 70px;
-  background: rgba(255, 255, 255, 0.6);
-  border-radius: 25px;
+  width: 200px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 40px;
   position: absolute;
   will-change: transform;
   pointer-events: none;
+  backdrop-filter: blur(2px);
   box-shadow: 
-    0 4px 20px rgba(255, 255, 255, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    0 4px 20px rgba(255, 255, 255, 0.1),
+    inset 0 2px 0 rgba(255, 255, 255, 0.2);
 }
 
-.cloud:before,
-.cloud:after {
+.cloud-modern:before,
+.cloud-modern:after {
   content: "";
   position: absolute;
   background: inherit;
   border-radius: 50%;
+  backdrop-filter: inherit;
   box-shadow: inherit;
 }
 
-.cloud:before {
-  width: 100px;
-  height: 100px;
-  top: -40px;
-  left: 30px;
-}
-
-.cloud:after {
-  width: 60px;
-  height: 60px;
-  top: -25px;
-  left: 85px;
-}
-
-/* Style du soleil moderne */
-.sun {
-  @apply absolute;
+.cloud-modern:before {
   width: 120px;
   height: 120px;
-  background: radial-gradient(circle, rgba(255, 235, 120, 0.9) 0%, rgba(255, 200, 80, 0.7) 70%);
-  border-radius: 50%;
-  top: 40px;
-  right: 40px;
-  box-shadow: 
-    0 0 80px rgba(255, 220, 100, 0.6),
-    0 0 160px rgba(255, 220, 100, 0.3);
-  animation: pulse-modern 4s ease-in-out infinite;
+  top: -50px;
+  left: 40px;
 }
 
-.sun-ray {
+.cloud-modern:after {
+  width: 80px;
+  height: 80px;
+  top: -35px;
+  left: 100px;
+}
+
+/* Soleil moderne avec rayons fluides */
+.sun-modern {
   @apply absolute;
-  width: 150%;
-  height: 4px;
-  background: linear-gradient(90deg, rgba(255, 235, 120, 0.8) 0%, rgba(255, 235, 120, 0.4) 50%, transparent 100%);
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, 
+    rgba(255, 223, 0, 0.8) 0%, 
+    rgba(255, 165, 0, 0.6) 40%,
+    rgba(255, 140, 0, 0.4) 70%,
+    transparent 100%
+  );
+  border-radius: 50%;
+  top: 8%;
+  right: 8%;
+  box-shadow: 
+    0 0 60px rgba(255, 223, 0, 0.4),
+    0 0 120px rgba(255, 165, 0, 0.2);
+  animation: sun-pulse-modern 6s ease-in-out infinite;
+}
+
+.sun-ray-modern {
+  @apply absolute;
+  width: 120%;
+  height: 2px;
+  background: linear-gradient(90deg, 
+    rgba(255, 223, 0, 0.6) 0%, 
+    rgba(255, 223, 0, 0.3) 60%, 
+    transparent 100%
+  );
   top: 50%;
   left: 100%;
-  transform-origin: left;
-  animation: rotate-modern 12s linear infinite;
-  border-radius: 2px;
+  transform-origin: left center;
+  border-radius: 1px;
+  animation: sun-rays-modern 20s linear infinite;
 }
 
-@keyframes pulse-modern {
+@keyframes sun-pulse-modern {
   0%, 100% {
     transform: scale(1);
     opacity: 0.8;
@@ -185,25 +250,32 @@
   }
 }
 
-@keyframes rotate-modern {
+@keyframes sun-rays-modern {
   from {
     transform: rotate(0deg);
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
   }
   to {
     transform: rotate(360deg);
+    opacity: 0.6;
   }
 }
 
-/* Animation des flocons de neige modernes */
-.snow-flake {
-  @apply absolute text-white/80;
-  animation: snow-modern linear infinite;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+/* Flocons de neige fluides */
+.snow-flake-modern {
+  @apply absolute text-white/60;
+  animation: snow-fall-modern linear infinite;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+  will-change: transform;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3));
 }
 
-@keyframes snow-modern {
+@keyframes snow-fall-modern {
   0% {
-    transform: translateY(-10px) rotate(0deg);
+    transform: translateY(-20px) translateX(0) rotate(0deg);
     opacity: 0;
   }
   10% {
@@ -213,20 +285,20 @@
     opacity: 1;
   }
   100% {
-    transform: translateY(100vh) rotate(360deg);
+    transform: translateY(calc(100vh + 20px)) translateX(50px) rotate(360deg);
     opacity: 0;
   }
 }
 
-/* Scrollbar personnalisée */
+/* Scrollbar personnalisée et moderne */
 .scrollbar-modern {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
 }
 
 .scrollbar-modern::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 .scrollbar-modern::-webkit-scrollbar-track {
@@ -234,19 +306,20 @@
 }
 
 .scrollbar-modern::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  transition: background-color 0.3s ease;
 }
 
 .scrollbar-modern::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.35);
 }
 
-/* Animations d'entrée */
+/* Animations d'entrée fluides */
 @keyframes slide-in-up {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(30px);
   }
   to {
     opacity: 1;
@@ -264,22 +337,56 @@
 }
 
 .animate-slide-in-up {
-  animation: slide-in-up 0.6s ease-out;
+  animation: slide-in-up 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .animate-fade-in {
-  animation: fade-in 0.4s ease-out;
+  animation: fade-in 0.6s ease-out;
 }
 
-/* Hover effects modernes */
+/* Effets de survol optimisés */
 .hover-lift {
   @apply transition-all duration-300 ease-out;
 }
 
 .hover-lift:hover {
   transform: translateY(-2px);
-  box-shadow: 
-    0 12px 40px rgba(255, 255, 255, 0.15),
-    0 6px 20px rgba(255, 255, 255, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Optimisations de performance */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.weather-background-modern * {
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Media queries pour la performance */
+@media (prefers-reduced-motion: reduce) {
+  .rain-drop-modern,
+  .snow-flake-modern,
+  .sun-modern,
+  .cloud-modern {
+    animation: none;
+  }
+  
+  .lightning-modern {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .sun-modern {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .cloud-modern {
+    width: 160px;
+    height: 64px;
+  }
 }
