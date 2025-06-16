@@ -13,6 +13,8 @@ const searchQuery = ref("");
 const suggestions = ref<CityData[]>([]);
 const isSearchOpen = ref(false);
 const showSuggestions = ref(false);
+const locationStatus = ref<string>("");
+const isUsingUserLocation = ref(false);
 
 function hideSuggestions() {
   setTimeout(() => {
@@ -20,11 +22,30 @@ function hideSuggestions() {
   }, 200);
 }
 
-const API_KEY = "d43e9730fe896028d7f76cca8b066475"; // OpenWeatherMap API key
+function openSearch() {
+  isSearchOpen.value = true;
+  // Focus sur l'input après l'ouverture
+  setTimeout(() => {
+    const input = document.querySelector(
+      ".mobile-search-input"
+    ) as HTMLInputElement;
+    if (input) {
+      input.focus();
+    }
+  }, 100);
+}
+
+function closeSearch() {
+  isSearchOpen.value = false;
+  searchQuery.value = "";
+  showSuggestions.value = false;
+}
+
+const API_KEY = "d43e9730fe896028d7f76cca8b066475";
 const API_URL = "https://api.openweathermap.org/data/2.5/weather";
 const GEO_API_URL = "https://geo.api.gouv.fr/communes";
 
-async function getWeather(cityName: string) {
+async function getWeatherByCity(cityName: string) {
   try {
     loading.value = true;
     error.value = null;
@@ -37,10 +58,102 @@ async function getWeather(cityName: string) {
       },
     });
     weather.value = response.data;
+    isUsingUserLocation.value = false;
   } catch (e) {
     error.value = "Impossible de récupérer les données météo";
   } finally {
     loading.value = false;
+  }
+}
+
+async function getWeatherByCoordinates(lat: number, lon: number) {
+  try {
+    loading.value = true;
+    error.value = null;
+    locationStatus.value = "Récupération des données météo...";
+
+    const response = await axios.get(API_URL, {
+      params: {
+        lat: lat,
+        lon: lon,
+        appid: API_KEY,
+        units: "metric",
+        lang: "fr",
+      },
+    });
+    weather.value = response.data;
+    isUsingUserLocation.value = true;
+    locationStatus.value = "";
+  } catch (e) {
+    error.value =
+      "Impossible de récupérer les données météo pour votre position";
+    locationStatus.value = "";
+    // Fallback sur Paris en cas d'erreur
+    await getWeatherByCity("Paris");
+  } finally {
+    loading.value = false;
+  }
+}
+
+async function getUserLocation() {
+  return new Promise<{ lat: number; lon: number }>((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(
+        new Error("La géolocalisation n'est pas supportée par ce navigateur")
+      );
+      return;
+    }
+
+    locationStatus.value = "Demande d'autorisation de localisation...";
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve({
+          lat: position.coords.latitude,
+          lon: position.coords.longitude,
+        });
+      },
+      (error) => {
+        let errorMessage = "";
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = "Autorisation de localisation refusée";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = "Position indisponible";
+            break;
+          case error.TIMEOUT:
+            errorMessage = "Délai de localisation dépassé";
+            break;
+          default:
+            errorMessage = "Erreur de localisation inconnue";
+            break;
+        }
+        reject(new Error(errorMessage));
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000, // 5 minutes
+      }
+    );
+  });
+}
+
+async function initializeWeather() {
+  try {
+    locationStatus.value = "Détection de votre position...";
+    const userLocation = await getUserLocation();
+    locationStatus.value = "Position détectée !";
+    await getWeatherByCoordinates(userLocation.lat, userLocation.lon);
+  } catch (locationError) {
+    console.log("Erreur de géolocalisation:", locationError);
+    locationStatus.value = "Utilisation de la ville par défaut...";
+    // Fallback sur Paris si la géolocalisation échoue
+    await getWeatherByCity("Paris");
+    setTimeout(() => {
+      locationStatus.value = "";
+    }, 2000);
   }
 }
 
@@ -68,13 +181,25 @@ async function searchCities(query: string) {
 
 function selectCity(city: CityData) {
   searchQuery.value = city.nom;
-  isSearchOpen.value = false;
-  showSuggestions.value = false;
-  getWeather(city.nom);
+  closeSearch();
+  getWeatherByCity(city.nom);
+}
+
+async function refreshUserLocation() {
+  if (isUsingUserLocation.value) {
+    await initializeWeather();
+  }
+}
+
+function handleSearchSubmit() {
+  if (searchQuery.value.trim()) {
+    getWeatherByCity(searchQuery.value.trim());
+    closeSearch();
+  }
 }
 
 onMounted(() => {
-  getWeather("Paris");
+  initializeWeather();
 });
 </script>
 
@@ -86,23 +211,19 @@ onMounted(() => {
       class="z-0"
     />
 
-    <!-- Barre de navigation -->
+    <!-- Barre de navigation responsive -->
     <nav class="sticky top-0 z-50">
-      <div
-        class="absolute inset-0 border-b bg-black/30 backdrop-blur-lg border-white/20"
-      ></div>
-      <div class="px-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div class="relative flex items-center justify-between h-16">
-          <div
-            class="flex items-center space-x-4"
-            :class="{ 'hidden sm:flex': isSearchOpen }"
-          >
-            <div
-              class="w-10 h-10 transition-all duration-500 ease-in-out"
-              :class="{ 'scale-0 opacity-0': isSearchOpen }"
-            >
+      <div class="absolute inset-0 glass-nav"></div>
+      <div class="relative">
+        <!-- Navigation principale -->
+        <div
+          class="flex items-center justify-between px-3 mx-auto h-14 max-w-7xl sm:h-16 sm:px-4 md:px-6 lg:px-8"
+        >
+          <!-- Logo et titre -->
+          <div class="flex items-center flex-1 min-w-0 space-x-2 sm:space-x-3">
+            <div class="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10">
               <svg
-                class="w-full h-full text-yellow-400 animate-spin-slow filter drop-shadow-glow"
+                class="w-full h-full text-yellow-300 animate-spin-slow filter drop-shadow-lg"
                 viewBox="0 0 24 24"
                 fill="none"
               >
@@ -115,56 +236,40 @@ onMounted(() => {
                 />
               </svg>
             </div>
-            <div
-              class="transition-all duration-500 ease-in-out transform"
-              :class="{ 'opacity-0 -translate-x-8': isSearchOpen }"
-            >
-              <h1 class="text-lg font-bold text-white sm:text-xl">
+            <div class="flex-1 min-w-0">
+              <h1
+                class="text-sm font-bold truncate text-modern-primary sm:text-base md:text-lg lg:text-xl"
+              >
                 Météo Tranquille
               </h1>
-              <div class="text-xs sm:text-sm text-white/70">
-                Dernière mise à jour :
-                {{ new Date().toLocaleTimeString("fr-FR") }}
+              <div
+                class="text-xs truncate text-modern-secondary sm:text-xs md:text-sm"
+              >
+                <span v-if="locationStatus">{{ locationStatus }}</span>
+                <span v-else>
+                  Dernière mise à jour :
+                  {{
+                    new Date().toLocaleTimeString("fr-FR", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  }}
+                </span>
               </div>
             </div>
           </div>
 
-          <button
-            @click="isSearchOpen = true"
-            class="p-2 text-white transition-colors rounded-lg sm:hidden hover:bg-white/10"
-            :class="{ hidden: isSearchOpen }"
-          >
-            <svg
-              class="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </button>
-
-          <div
-            class="flex items-center space-x-4 overflow-visible"
-            :class="{
-              'absolute inset-x-0 top-0 h-16 px-4 sm:px-6 lg:px-8 backdrop-blur-lg border-b border-white/20 justify-between sm:relative sm:h-auto sm:px-0 sm:bg-transparent sm:border-0': true,
-              'translate-y-0 opacity-100': isSearchOpen,
-              'translate-y-[-100%] opacity-0 pointer-events-none sm:translate-y-0 sm:opacity-100 sm:pointer-events-auto':
-                !isSearchOpen,
-            }"
-          >
+          <!-- Actions -->
+          <div class="flex items-center flex-shrink-0 space-x-1 sm:space-x-2">
+            <!-- Bouton de rafraîchissement de la géolocalisation -->
             <button
-              @click="isSearchOpen = false"
-              class="p-2 text-white transition-colors rounded-lg sm:hidden hover:bg-white/10"
-              v-if="isSearchOpen"
+              v-if="isUsingUserLocation && !loading"
+              @click="refreshUserLocation"
+              class="p-1.5 transition-all duration-300 rounded-lg glass-button text-modern-primary hover-lift sm:p-2 sm:rounded-xl"
+              title="Actualiser votre position"
             >
               <svg
-                class="w-6 h-6"
+                class="w-4 h-4 sm:w-5 sm:h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -173,44 +278,46 @@ onMounted(() => {
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
+                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                 />
               </svg>
             </button>
 
-            <div
-              class="relative flex-1 transition-all duration-300 ease-in-out transform sm:w-96"
-              :class="{
-                'scale-100 opacity-100': isSearchOpen,
-                'scale-95 opacity-0 sm:scale-100 sm:opacity-100': !isSearchOpen,
-              }"
-            >
+            <!-- Barre de recherche pour desktop -->
+            <div class="relative hidden xl:block">
               <input
                 v-model="searchQuery"
                 @input="searchCities(searchQuery)"
-                @keyup.enter="getWeather(searchQuery)"
+                @keyup.enter="handleSearchSubmit"
                 @blur="hideSuggestions"
                 @focus="showSuggestions = true"
                 type="text"
                 placeholder="Entrez une ville..."
-                class="w-full px-4 py-2 text-white border rounded-lg bg-white/10 backdrop-blur-lg placeholder-white/70 border-white/30 focus:outline-none focus:border-white"
+                class="px-4 py-2 transition-all duration-300 w-72 rounded-xl glass-input focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/50 2xl:w-80"
               />
 
+              <!-- Suggestions pour desktop -->
               <div
                 v-if="showSuggestions && suggestions.length > 0"
-                class="absolute w-full mt-1 overflow-hidden rounded-lg shadow-lg bg-white/95 backdrop-blur-lg"
-                style="max-width: inherit; z-index: 9999"
+                class="absolute w-full mt-2 overflow-hidden rounded-xl glass-suggestion animate-slide-in-up"
+                style="z-index: 9999"
               >
                 <button
                   v-for="city in suggestions"
                   :key="city.code"
                   @click="selectCity(city)"
-                  class="w-full px-4 py-3 text-left transition-colors border-b border-gray-100 hover:bg-gray-100 last:border-none"
+                  class="w-full px-4 py-3 text-left transition-all duration-200 border-b border-gray-100/20 hover:bg-white/10 last:border-none"
                 >
                   <div class="flex flex-col">
-                    <span class="font-medium text-gray-900">
+                    <span class="font-medium text-gray-800">
                       {{ city.nom }}
-                      <span class="ml-1 text-sm text-gray-500"
+                      <span class="ml-1 text-sm text-gray-600"
                         >({{ city.codeDepartement }})</span
                       >
                     </span>
@@ -225,10 +332,160 @@ onMounted(() => {
                 v-else-if="
                   searchQuery && suggestions.length === 0 && showSuggestions
                 "
-                class="absolute w-full p-3 mt-1 text-gray-600 rounded-lg bg-white/95 backdrop-blur-lg"
-                style="max-width: inherit; z-index: 9999"
+                class="absolute w-full p-3 mt-2 text-gray-600 rounded-xl glass-suggestion animate-fade-in"
+                style="z-index: 9999"
               >
                 Aucune ville trouvée
+              </div>
+            </div>
+
+            <!-- Bouton de recherche pour mobile et tablette -->
+            <button
+              @click="openSearch"
+              class="p-1.5 transition-all duration-300 rounded-lg glass-button text-modern-primary hover-lift xl:hidden sm:p-2 sm:rounded-xl"
+              aria-label="Rechercher une ville"
+            >
+              <svg
+                class="w-5 h-5 sm:w-6 sm:h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Modal de recherche mobile/tablette -->
+        <div v-if="isSearchOpen" class="fixed inset-0 z-50 xl:hidden">
+          <!-- Backdrop -->
+          <div
+            class="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in"
+            @click="closeSearch"
+          ></div>
+
+          <!-- Modal de recherche -->
+          <div
+            class="relative flex items-start justify-center min-h-screen p-3 pt-12 z-60 sm:p-4 sm:pt-16"
+          >
+            <div
+              class="w-full max-w-lg p-4 glass-card rounded-2xl animate-slide-in-up sm:p-6"
+            >
+              <!-- En-tête de la recherche -->
+              <div class="flex items-center mb-6 space-x-3 sm:space-x-4">
+                <button
+                  @click="closeSearch"
+                  class="flex-shrink-0 p-2 transition-all duration-300 rounded-xl glass-button text-modern-primary hover-lift"
+                  aria-label="Fermer la recherche"
+                >
+                  <svg
+                    class="w-5 h-5 sm:w-6 sm:h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+
+                <div class="flex-1">
+                  <input
+                    v-model="searchQuery"
+                    @input="searchCities(searchQuery)"
+                    @keyup.enter="handleSearchSubmit"
+                    @focus="showSuggestions = true"
+                    type="text"
+                    placeholder="Entrez une ville..."
+                    class="w-full px-4 py-3 text-base transition-all duration-300 mobile-search-input rounded-xl glass-input focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/50 sm:text-lg"
+                  />
+                </div>
+              </div>
+
+              <!-- Suggestions pour mobile/tablette -->
+              <div
+                v-if="showSuggestions && suggestions.length > 0"
+                class="space-y-2 overflow-y-auto max-h-80 scrollbar-modern"
+              >
+                <button
+                  v-for="city in suggestions"
+                  :key="city.code"
+                  @click="selectCity(city)"
+                  class="w-full p-3 text-left transition-all duration-200 rounded-xl hover:bg-white/10 glass-button sm:p-4"
+                >
+                  <div class="flex flex-col">
+                    <span
+                      class="text-base font-medium text-modern-primary sm:text-lg"
+                    >
+                      {{ city.nom }}
+                      <span class="ml-1 text-sm text-modern-secondary"
+                        >({{ city.codeDepartement }})</span
+                      >
+                    </span>
+                    <span class="mt-1 text-sm text-modern-accent">
+                      {{ city.departement.nom }} - {{ city.region.nom }}
+                    </span>
+                  </div>
+                </button>
+              </div>
+
+              <div
+                v-else-if="
+                  searchQuery && suggestions.length === 0 && showSuggestions
+                "
+                class="p-6 text-center text-modern-secondary sm:p-8"
+              >
+                <svg
+                  class="w-12 h-12 mx-auto mb-3 text-modern-accent"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.291-1.1-5.291-2.709M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                  ></path>
+                </svg>
+                <p class="text-lg">Aucune ville trouvée</p>
+                <p class="mt-1 text-sm text-modern-accent">
+                  Essayez un autre nom de ville
+                </p>
+              </div>
+
+              <!-- État vide -->
+              <div
+                v-else-if="!searchQuery"
+                class="p-6 text-center text-modern-secondary sm:p-8"
+              >
+                <svg
+                  class="w-12 h-12 mx-auto mb-3 text-modern-accent"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  ></path>
+                </svg>
+                <p class="text-lg">Rechercher une ville</p>
+                <p class="mt-1 text-sm text-modern-accent">
+                  Tapez le nom d'une ville pour voir la météo
+                </p>
               </div>
             </div>
           </div>
@@ -238,13 +495,41 @@ onMounted(() => {
 
     <!-- Contenu principal -->
     <main
-      class="relative z-10 w-full px-2 py-4 mx-auto max-w-7xl sm:px-6 lg:px-8 sm:py-8"
+      class="relative z-10 w-full px-3 py-3 mx-auto max-w-7xl sm:px-4 sm:py-4 md:px-6 md:py-6 lg:px-8 lg:py-8"
     >
-      <div v-if="loading" class="text-center text-white">Chargement...</div>
-      <div v-else-if="error" class="text-center text-red-200">
-        {{ error }}
+      <div v-if="loading" class="text-center text-modern-primary animate-pulse">
+        <div
+          class="inline-block w-6 h-6 border-4 rounded-full border-white/30 border-t-white animate-spin sm:w-8 sm:h-8"
+        ></div>
+        <p class="mt-3 text-base sm:text-lg">
+          {{ locationStatus || "Chargement..." }}
+        </p>
       </div>
-      <WeatherCard v-else-if="weather" :weather="weather" />
+
+      <div v-else-if="error" class="text-center text-red-200 animate-fade-in">
+        <div class="p-4 rounded-2xl glass-card sm:p-6">
+          <svg
+            class="w-10 h-10 mx-auto mb-3 text-red-300 sm:w-12 sm:h-12"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.18 16.5c-.77.833.192 2.5 1.732 2.5z"
+            ></path>
+          </svg>
+          <p class="text-base sm:text-lg">{{ error }}</p>
+        </div>
+      </div>
+
+      <WeatherCard
+        v-else-if="weather"
+        :weather="weather"
+        class="animate-slide-in-up"
+      />
     </main>
   </div>
 </template>
