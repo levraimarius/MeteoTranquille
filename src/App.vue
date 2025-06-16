@@ -15,6 +15,7 @@ const isSearchOpen = ref(false);
 const showSuggestions = ref(false);
 const locationStatus = ref<string>("");
 const isUsingUserLocation = ref(false);
+const isLocationLoading = ref(false);
 
 function hideSuggestions() {
   setTimeout(() => {
@@ -181,8 +182,13 @@ function selectCity(city: CityData) {
 }
 
 async function refreshUserLocation() {
-  if (isUsingUserLocation.value) {
+  if (isLocationLoading.value) return;
+  
+  try {
+    isLocationLoading.value = true;
     await initializeWeather();
+  } finally {
+    isLocationLoading.value = false;
   }
 }
 
@@ -244,15 +250,16 @@ onMounted(() => {
 
           <!-- Actions -->
           <div class="flex items-center space-x-1 flex-shrink-0 sm:space-x-2">
-            <!-- Bouton de rafraîchissement de la géolocalisation -->
+            <!-- Bouton de géolocalisation - toujours visible -->
             <button
-              v-if="isUsingUserLocation && !loading"
               @click="refreshUserLocation"
-              class="p-1.5 transition-all duration-300 rounded-lg glass-button text-modern-primary hover-lift sm:p-2 sm:rounded-xl"
-              title="Actualiser votre position"
+              :disabled="isLocationLoading"
+              class="p-1.5 transition-all duration-300 rounded-lg glass-button text-modern-primary hover-lift sm:p-2 sm:rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+              :title="isUsingUserLocation ? 'Actualiser votre position' : 'Utiliser votre position'"
             >
               <svg
-                class="w-4 h-4 sm:w-5 sm:h-5"
+                v-if="!isLocationLoading"
+                class="w-5 h-5 sm:w-6 sm:h-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -268,6 +275,21 @@ onMounted(() => {
                   stroke-linejoin="round"
                   stroke-width="2"
                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+              <!-- Icône de chargement -->
+              <svg
+                v-else
+                class="w-5 h-5 sm:w-6 sm:h-6 animate-spin"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                 />
               </svg>
             </button>
