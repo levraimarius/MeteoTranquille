@@ -1,0 +1,1 @@
+{"root":["./src/main.ts","./src/vite-env.d.ts","./src/types/weather.ts","./src/app.vue","./src/components/countryflag.vue","./src/components/weatheranimations.vue","./src/components/weathercard.vue","./src/components/weatherdetails.vue","./src/components/weatherforecast.vue","./src/components/weathericon.vue"],"version":"5.7.3"}

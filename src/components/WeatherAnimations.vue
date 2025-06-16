@@ -28,7 +28,6 @@ const props = defineProps<{
 }>();
 
 const animationContainer = ref<HTMLDivElement | null>(null);
-const elements: HTMLElement[] = [];
 const clouds = ref<HTMLElement[]>([]);
 const particles: HTMLElement[] = [];
 
