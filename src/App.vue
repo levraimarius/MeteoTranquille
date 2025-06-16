@@ -20,7 +20,7 @@ function hideSuggestions() {
   }, 200);
 }
 
-const API_KEY = "d43e9730fe896028d7f76cca8b066475"; // OpenWeatherMap API key
+const API_KEY = "d43e9730fe896028d7f76cca8b066475";
 const API_URL = "https://api.openweathermap.org/data/2.5/weather";
 const GEO_API_URL = "https://geo.api.gouv.fr/communes";
 
@@ -86,12 +86,10 @@ onMounted(() => {
       class="z-0"
     />
 
-    <!-- Barre de navigation -->
+    <!-- Barre de navigation moderne -->
     <nav class="sticky top-0 z-50">
-      <div
-        class="absolute inset-0 border-b bg-black/30 backdrop-blur-lg border-white/20"
-      ></div>
-      <div class="px-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <div class="absolute inset-0 glass-nav"></div>
+      <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div class="relative flex items-center justify-between h-16">
           <div
             class="flex items-center space-x-4"
@@ -102,7 +100,7 @@ onMounted(() => {
               :class="{ 'scale-0 opacity-0': isSearchOpen }"
             >
               <svg
-                class="w-full h-full text-yellow-400 animate-spin-slow filter drop-shadow-glow"
+                class="w-full h-full text-yellow-300 animate-spin-slow filter drop-shadow-lg"
                 viewBox="0 0 24 24"
                 fill="none"
               >
@@ -119,10 +117,10 @@ onMounted(() => {
               class="transition-all duration-500 ease-in-out transform"
               :class="{ 'opacity-0 -translate-x-8': isSearchOpen }"
             >
-              <h1 class="text-lg font-bold text-white sm:text-xl">
+              <h1 class="text-lg font-bold text-modern-primary sm:text-xl">
                 Météo Tranquille
               </h1>
-              <div class="text-xs sm:text-sm text-white/70">
+              <div class="text-xs text-modern-secondary sm:text-sm">
                 Dernière mise à jour :
                 {{ new Date().toLocaleTimeString("fr-FR") }}
               </div>
@@ -131,7 +129,7 @@ onMounted(() => {
 
           <button
             @click="isSearchOpen = true"
-            class="p-2 text-white transition-colors rounded-lg sm:hidden hover:bg-white/10"
+            class="p-2 transition-all duration-300 rounded-xl glass-button text-modern-primary sm:hidden hover-lift"
             :class="{ hidden: isSearchOpen }"
           >
             <svg
@@ -152,7 +150,7 @@ onMounted(() => {
           <div
             class="flex items-center space-x-4 overflow-visible"
             :class="{
-              'absolute inset-x-0 top-0 h-16 px-4 sm:px-6 lg:px-8 backdrop-blur-lg border-b border-white/20 justify-between sm:relative sm:h-auto sm:px-0 sm:bg-transparent sm:border-0': true,
+              'absolute inset-x-0 top-0 h-16 px-4 sm:px-6 lg:px-8 glass-nav justify-between sm:relative sm:h-auto sm:px-0 sm:bg-transparent': true,
               'translate-y-0 opacity-100': isSearchOpen,
               'translate-y-[-100%] opacity-0 pointer-events-none sm:translate-y-0 sm:opacity-100 sm:pointer-events-auto':
                 !isSearchOpen,
@@ -160,7 +158,7 @@ onMounted(() => {
           >
             <button
               @click="isSearchOpen = false"
-              class="p-2 text-white transition-colors rounded-lg sm:hidden hover:bg-white/10"
+              class="p-2 transition-all duration-300 rounded-xl glass-button text-modern-primary sm:hidden hover-lift"
               v-if="isSearchOpen"
             >
               <svg
@@ -193,24 +191,24 @@ onMounted(() => {
                 @focus="showSuggestions = true"
                 type="text"
                 placeholder="Entrez une ville..."
-                class="w-full px-4 py-2 text-white border rounded-lg bg-white/10 backdrop-blur-lg placeholder-white/70 border-white/30 focus:outline-none focus:border-white"
+                class="w-full px-4 py-2 rounded-xl glass-input focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/50 transition-all duration-300"
               />
 
               <div
                 v-if="showSuggestions && suggestions.length > 0"
-                class="absolute w-full mt-1 overflow-hidden rounded-lg shadow-lg bg-white/95 backdrop-blur-lg"
+                class="absolute w-full mt-2 overflow-hidden rounded-xl glass-suggestion animate-slide-in-up"
                 style="max-width: inherit; z-index: 9999"
               >
                 <button
                   v-for="city in suggestions"
                   :key="city.code"
                   @click="selectCity(city)"
-                  class="w-full px-4 py-3 text-left transition-colors border-b border-gray-100 hover:bg-gray-100 last:border-none"
+                  class="w-full px-4 py-3 text-left transition-all duration-200 border-b border-gray-100/20 hover:bg-white/10 last:border-none hover-lift"
                 >
                   <div class="flex flex-col">
-                    <span class="font-medium text-gray-900">
+                    <span class="font-medium text-gray-800">
                       {{ city.nom }}
-                      <span class="ml-1 text-sm text-gray-500"
+                      <span class="ml-1 text-sm text-gray-600"
                         >({{ city.codeDepartement }})</span
                       >
                     </span>
@@ -225,7 +223,7 @@ onMounted(() => {
                 v-else-if="
                   searchQuery && suggestions.length === 0 && showSuggestions
                 "
-                class="absolute w-full p-3 mt-1 text-gray-600 rounded-lg bg-white/95 backdrop-blur-lg"
+                class="absolute w-full p-3 mt-2 text-gray-600 rounded-xl glass-suggestion animate-fade-in"
                 style="max-width: inherit; z-index: 9999"
               >
                 Aucune ville trouvée
@@ -238,13 +236,18 @@ onMounted(() => {
 
     <!-- Contenu principal -->
     <main
-      class="relative z-10 w-full px-2 py-4 mx-auto max-w-7xl sm:px-6 lg:px-8 sm:py-8"
+      class="relative z-10 w-full px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8 sm:py-8"
     >
-      <div v-if="loading" class="text-center text-white">Chargement...</div>
-      <div v-else-if="error" class="text-center text-red-200">
-        {{ error }}
+      <div v-if="loading" class="text-center text-modern-primary animate-pulse">
+        <div class="inline-block w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+        <p class="mt-2">Chargement...</p>
       </div>
-      <WeatherCard v-else-if="weather" :weather="weather" />
+      <div v-else-if="error" class="text-center text-red-200 animate-fade-in">
+        <div class="p-4 rounded-xl glass-card">
+          {{ error }}
+        </div>
+      </div>
+      <WeatherCard v-else-if="weather" :weather="weather" class="animate-slide-in-up" />
     </main>
   </div>
 </template>
