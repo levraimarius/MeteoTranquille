@@ -12,7 +12,8 @@
     "vue": "^3.4.38",
     "@vueuse/core": "^10.9.0",
     "axios": "^1.6.7",
-    "gsap": "^3.12.5"
+    "gsap": "^3.12.5",
+    "country-flag-icons": "^1.5.7"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.3",

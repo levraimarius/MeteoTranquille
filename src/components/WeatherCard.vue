@@ -9,6 +9,7 @@ import type {
   ForecastApiResponse,
 } from "../types/weather";
 import WeatherIcon from "./WeatherIcon.vue";
+import CountryFlag from "./CountryFlag.vue";
 
 const props = defineProps<{
   weather: WeatherData;
@@ -189,7 +190,7 @@ onMounted(getForecast);
     <div class="p-4 shadow-lg text-modern-primary glass-card rounded-2xl sm:p-6">
       <div class="flex flex-col items-start mb-4 space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 sm:mb-6">
         <h2 class="text-xl font-bold sm:text-2xl md:text-3xl">{{ weather.name }}</h2>
-        <span class="px-2 py-1 text-xs rounded-full bg-white/20 text-modern-secondary sm:px-3 sm:text-sm">{{ weather.sys.country }}</span>
+        <CountryFlag :countryCode="weather.sys.country" size="md" />
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 sm:gap-6">
