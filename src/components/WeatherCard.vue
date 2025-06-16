@@ -184,42 +184,47 @@ onMounted(getForecast);
 </script>
 
 <template>
-  <div class="space-y-6">
+  <div class="space-y-4 sm:space-y-6">
     <!-- Carte principale -->
-    <div class="p-6 shadow-lg text-modern-primary glass-card rounded-2xl">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="text-2xl font-bold sm:text-3xl">{{ weather.name }}</h2>
-        <span class="px-3 py-1 text-sm rounded-full bg-white/20 text-modern-secondary">{{ weather.sys.country }}</span>
+    <div class="p-4 shadow-lg text-modern-primary glass-card rounded-2xl sm:p-6">
+      <div class="flex flex-col items-start mb-4 space-y-2 sm:flex-row sm:items-center sm:justify-between sm:space-y-0 sm:mb-6">
+        <h2 class="text-xl font-bold sm:text-2xl md:text-3xl">{{ weather.name }}</h2>
+        <span class="px-2 py-1 text-xs rounded-full bg-white/20 text-modern-secondary sm:px-3 sm:text-sm">{{ weather.sys.country }}</span>
       </div>
 
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 sm:gap-6">
         <div class="flex items-center justify-center">
-          <WeatherIcon :type="weather.weather[0].main" />
-          <div class="flex flex-col ml-6">
-            <div class="text-5xl font-light sm:text-6xl">
+          <WeatherIcon :type="weather.weather[0].main" class="flex-shrink-0" />
+          <div class="flex flex-col ml-4 sm:ml-6">
+            <div class="text-4xl font-light sm:text-5xl md:text-6xl">
               {{ Math.round(temperature) }}°C
             </div>
-            <div class="mt-2 text-sm text-modern-secondary">
+            <div class="mt-1 text-sm text-modern-secondary sm:mt-2">
               Ressenti {{ Math.round(weather.main.feels_like) }}°C
             </div>
           </div>
         </div>
 
-        <div class="space-y-4">
-          <div class="text-xl text-center capitalize md:text-left">
+        <div class="space-y-3 sm:space-y-4">
+          <div class="text-lg text-center capitalize sm:text-xl md:text-left">
             {{ weather.weather[0].description }}
-            <div class="mt-2 text-sm text-modern-accent">
+            <div class="mt-1 text-xs text-modern-accent sm:mt-2 sm:text-sm">
               Mise à jour :
-              {{ new Date(weather.dt * 1000).toLocaleString("fr-FR") }}
+              {{ new Date(weather.dt * 1000).toLocaleString("fr-FR", { 
+                day: 'numeric', 
+                month: 'short', 
+                hour: '2-digit', 
+                minute: '2-digit' 
+              }) }}
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
+          <div class="grid grid-cols-2 gap-3 sm:gap-4">
             <div class="p-3 rounded-xl bg-white/10">
-              <div class="text-sm text-modern-accent">Min</div>
-              <div class="flex items-center text-lg font-medium">
+              <div class="text-xs text-modern-accent sm:text-sm">Min</div>
+              <div class="flex items-center text-base font-medium sm:text-lg">
                 <svg
-                  class="w-4 h-4 mr-2 text-blue-300"
+                  class="w-3 h-3 mr-1 text-blue-300 sm:w-4 sm:h-4 sm:mr-2"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -235,10 +240,10 @@ onMounted(getForecast);
               </div>
             </div>
             <div class="p-3 rounded-xl bg-white/10">
-              <div class="text-sm text-modern-accent">Max</div>
-              <div class="flex items-center text-lg font-medium">
+              <div class="text-xs text-modern-accent sm:text-sm">Max</div>
+              <div class="flex items-center text-base font-medium sm:text-lg">
                 <svg
-                  class="w-4 h-4 mr-2 text-red-300"
+                  class="w-3 h-3 mr-1 text-red-300 sm:w-4 sm:h-4 sm:mr-2"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -255,7 +260,7 @@ onMounted(getForecast);
             </div>
           </div>
 
-          <div class="pt-4 mt-4 text-sm border-t text-modern-accent border-white/20">
+          <div class="pt-3 mt-3 text-xs border-t text-modern-accent border-white/20 sm:pt-4 sm:mt-4 sm:text-sm">
             <div class="flex items-center justify-between">
               <span>Population</span>
               <span class="text-modern-secondary">
@@ -272,9 +277,9 @@ onMounted(getForecast);
     </div>
 
     <!-- Prévisions 24h -->
-    <div class="p-6 overflow-hidden shadow-lg text-modern-primary glass-card rounded-2xl">
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="text-xl font-semibold">Prévisions 24h</h3>
+    <div class="p-4 overflow-hidden shadow-lg text-modern-primary glass-card rounded-2xl sm:p-6">
+      <div class="flex items-center justify-between mb-4 sm:mb-6">
+        <h3 class="text-lg font-semibold sm:text-xl">Prévisions 24h</h3>
 
         <div class="hidden space-x-2 lg:flex">
           <button
@@ -298,9 +303,9 @@ onMounted(getForecast);
         </div>
       </div>
 
-      <div v-if="forecastLoading" class="py-8 text-center">
-        <div class="inline-block w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-        <p class="mt-2 text-modern-secondary">Chargement des prévisions...</p>
+      <div v-if="forecastLoading" class="py-6 text-center sm:py-8">
+        <div class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin sm:w-6 sm:h-6"></div>
+        <p class="mt-2 text-sm text-modern-secondary sm:text-base">Chargement des prévisions...</p>
       </div>
 
       <div v-else-if="forecastError" class="py-4 text-center text-red-200">
@@ -310,23 +315,23 @@ onMounted(getForecast);
       <div
         v-else
         ref="hourlyForecastScroll"
-        class="flex gap-3 pb-4 -mb-4 overflow-x-auto scrollbar-modern sm:gap-4 snap-x snap-mandatory"
+        class="flex gap-2 pb-4 -mb-4 overflow-x-auto scrollbar-modern sm:gap-3 snap-x snap-mandatory"
       >
         <div
           v-for="item in forecast"
           :key="item.dt"
-          class="flex-none w-[140px] sm:w-[170px] p-4 rounded-xl bg-white/10 snap-start transition-all duration-300"
+          class="flex-none w-[120px] sm:w-[140px] md:w-[170px] p-3 rounded-xl bg-white/10 snap-start transition-all duration-300 sm:p-4"
         >
-          <div class="mb-3 text-center text-modern-secondary">
+          <div class="mb-2 text-xs text-center text-modern-secondary sm:mb-3 sm:text-sm">
             {{ formatHour(item.dt_txt) }}
           </div>
 
           <div class="flex flex-col items-center">
-            <WeatherIcon :type="item.weather[0].main" class="mb-3 scale-50" />
-            <div class="text-xl font-semibold">
+            <WeatherIcon :type="item.weather[0].main" class="mb-2 scale-50 sm:mb-3" />
+            <div class="text-lg font-semibold sm:text-xl">
               {{ Math.round(item.main.temp) }}°C
             </div>
-            <div class="mt-2 text-xs text-modern-accent">
+            <div class="mt-1 text-xs text-modern-accent sm:mt-2">
               {{ Math.round(item.wind.speed * 3.6) }} km/h
             </div>
           </div>
@@ -335,9 +340,9 @@ onMounted(getForecast);
     </div>
 
     <!-- Prévisions 7 jours -->
-    <div class="p-6 shadow-lg text-modern-primary glass-card rounded-2xl">
-      <div class="flex items-center justify-between mb-6">
-        <h3 class="text-xl font-semibold">Prévisions 7 jours</h3>
+    <div class="p-4 shadow-lg text-modern-primary glass-card rounded-2xl sm:p-6">
+      <div class="flex items-center justify-between mb-4 sm:mb-6">
+        <h3 class="text-lg font-semibold sm:text-xl">Prévisions 7 jours</h3>
 
         <div class="hidden space-x-2 lg:flex">
           <button
@@ -361,9 +366,9 @@ onMounted(getForecast);
         </div>
       </div>
 
-      <div v-if="forecastLoading" class="py-8 text-center">
-        <div class="inline-block w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-        <p class="mt-2 text-modern-secondary">Chargement des prévisions...</p>
+      <div v-if="forecastLoading" class="py-6 text-center sm:py-8">
+        <div class="inline-block w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin sm:w-6 sm:h-6"></div>
+        <p class="mt-2 text-sm text-modern-secondary sm:text-base">Chargement des prévisions...</p>
       </div>
 
       <div v-else-if="forecastError" class="py-4 text-center text-red-200">
@@ -373,30 +378,30 @@ onMounted(getForecast);
       <div
         v-else
         ref="dailyForecastScroll"
-        class="flex gap-3 pb-4 -mb-4 overflow-x-auto scrollbar-modern sm:gap-4"
+        class="flex gap-2 pb-4 -mb-4 overflow-x-auto scrollbar-modern sm:gap-3"
       >
         <div
           v-for="item in dailyForecast"
           :key="item.dt"
-          class="flex-none w-[170px] sm:w-[210px] p-4 rounded-xl bg-white/10 transition-all duration-300"
+          class="flex-none w-[150px] sm:w-[170px] md:w-[210px] p-3 rounded-xl bg-white/10 transition-all duration-300 sm:p-4"
         >
-          <div class="flex flex-col items-center mb-3 sm:flex-row sm:justify-between">
-            <div class="text-base font-medium capitalize text-modern-secondary">{{ formatDay(item.dt) }}</div>
+          <div class="flex flex-col items-center mb-2 sm:flex-row sm:justify-between sm:mb-3">
+            <div class="text-sm font-medium capitalize text-modern-secondary sm:text-base">{{ formatDay(item.dt) }}</div>
             <WeatherIcon :type="item.weather[0].main" class="-my-2 scale-50 sm:my-0" />
           </div>
 
-          <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center justify-between mb-2 sm:mb-3">
             <div class="text-center">
               <div class="text-xs text-modern-accent">Min</div>
-              <div class="text-lg font-semibold">{{ Math.round(item.temp.min) }}°C</div>
+              <div class="text-base font-semibold sm:text-lg">{{ Math.round(item.temp.min) }}°C</div>
             </div>
             <div class="text-center">
               <div class="text-xs text-modern-accent">Max</div>
-              <div class="text-lg font-semibold">{{ Math.round(item.temp.max) }}°C</div>
+              <div class="text-base font-semibold sm:text-lg">{{ Math.round(item.temp.max) }}°C</div>
             </div>
           </div>
 
-          <div class="text-sm space-y-1">
+          <div class="text-xs space-y-1 sm:text-sm">
             <div class="flex justify-between">
               <span class="text-modern-accent">Pluie</span>
               <span class="text-modern-secondary">{{ Math.round((item.pop || 0) * 100) }}%</span>
@@ -411,12 +416,12 @@ onMounted(getForecast);
     </div>
 
     <!-- Conditions atmosphériques -->
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-      <div class="p-6 shadow-lg text-modern-primary glass-card rounded-2xl">
-        <h3 class="mb-6 text-xl font-semibold">Conditions atmosphériques</h3>
-        <div class="space-y-4">
-          <div class="p-4 rounded-xl bg-white/10">
-            <div class="mb-2 text-sm text-modern-accent">Indice de confort</div>
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 sm:gap-6">
+      <div class="p-4 shadow-lg text-modern-primary glass-card rounded-2xl sm:p-6">
+        <h3 class="mb-4 text-lg font-semibold sm:mb-6 sm:text-xl">Conditions atmosphériques</h3>
+        <div class="space-y-3 sm:space-y-4">
+          <div class="p-3 rounded-xl bg-white/10 sm:p-4">
+            <div class="mb-2 text-xs text-modern-accent sm:text-sm">Indice de confort</div>
             <div class="relative h-2 overflow-hidden rounded-full bg-white/20">
               <div
                 class="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-400 via-yellow-400 to-red-400 rounded-full"
@@ -433,28 +438,28 @@ onMounted(getForecast);
             </div>
           </div>
 
-          <div class="space-y-3">
-            <div class="flex items-center justify-between">
+          <div class="space-y-2 sm:space-y-3">
+            <div class="flex items-center justify-between text-sm sm:text-base">
               <span class="text-modern-accent">Ressenti</span>
               <span class="font-medium text-modern-secondary">{{ Math.round(weather.main.feels_like) }}°C</span>
             </div>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between text-sm sm:text-base">
               <span class="text-modern-accent">Pression</span>
               <span class="font-medium text-modern-secondary">{{ weather.main.pressure }} hPa</span>
             </div>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between text-sm sm:text-base">
               <span class="text-modern-accent">Humidité</span>
               <span class="font-medium text-modern-secondary">{{ weather.main.humidity }}%</span>
             </div>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between text-sm sm:text-base">
               <span class="text-modern-accent">Visibilité</span>
               <span class="font-medium text-modern-secondary">{{ formatVisibility(weather.visibility) }}</span>
             </div>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between text-sm sm:text-base">
               <span class="text-modern-accent">Point de rosée</span>
               <span class="font-medium text-modern-secondary">{{ Math.round(weather.main.temp - (100 - weather.main.humidity) / 5) }}°C</span>
             </div>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between text-sm sm:text-base">
               <span class="text-modern-accent">Qualité de l'air</span>
               <span :class="['font-medium', airQuality.color]">{{ airQuality.text }}</span>
             </div>
@@ -463,16 +468,16 @@ onMounted(getForecast);
       </div>
 
       <!-- Vent et ensoleillement -->
-      <div class="p-6 shadow-lg text-modern-primary glass-card rounded-2xl">
-        <h3 class="mb-6 text-xl font-semibold">Vent et ensoleillement</h3>
-        <div class="space-y-4">
-          <div class="p-4 rounded-xl bg-white/10">
-            <div class="mb-3 text-sm text-modern-accent">Rose des vents</div>
-            <div class="relative w-24 h-24 mx-auto">
+      <div class="p-4 shadow-lg text-modern-primary glass-card rounded-2xl sm:p-6">
+        <h3 class="mb-4 text-lg font-semibold sm:mb-6 sm:text-xl">Vent et ensoleillement</h3>
+        <div class="space-y-3 sm:space-y-4">
+          <div class="p-3 rounded-xl bg-white/10 sm:p-4">
+            <div class="mb-2 text-xs text-modern-accent sm:mb-3 sm:text-sm">Rose des vents</div>
+            <div class="relative w-20 h-20 mx-auto sm:w-24 sm:h-24">
               <div class="absolute inset-0 border-2 rounded-full border-white/30"></div>
               <div class="absolute inset-0 flex items-center justify-center">
                 <div
-                  class="text-2xl transform transition-transform duration-500"
+                  class="text-xl transition-transform duration-500 sm:text-2xl"
                   :style="{ transform: `rotate(${weather.wind.deg}deg)` }"
                 >
                   ➤
@@ -481,28 +486,28 @@ onMounted(getForecast);
             </div>
           </div>
           
-          <div class="space-y-3">
-            <div class="flex items-center justify-between">
+          <div class="space-y-2 sm:space-y-3">
+            <div class="flex items-center justify-between text-sm sm:text-base">
               <span class="text-modern-accent">Vitesse du vent</span>
               <span class="font-medium text-modern-secondary">{{ Math.round(weather.wind.speed * 3.6) }} km/h</span>
             </div>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between text-sm sm:text-base">
               <span class="text-modern-accent">Direction</span>
               <span class="font-medium text-modern-secondary">{{ formatWindDirection(weather.wind.deg) }}</span>
             </div>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between text-sm sm:text-base">
               <span class="text-modern-accent">Rafales</span>
               <span class="font-medium text-modern-secondary">{{ Math.round((weather.wind.gust || weather.wind.speed) * 3.6) }} km/h</span>
             </div>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between text-sm sm:text-base">
               <span class="text-modern-accent">Lever du soleil</span>
               <span class="font-medium text-modern-secondary">{{ formatTime(weather.sys.sunrise) }}</span>
             </div>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between text-sm sm:text-base">
               <span class="text-modern-accent">Coucher du soleil</span>
               <span class="font-medium text-modern-secondary">{{ formatTime(weather.sys.sunset) }}</span>
             </div>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between text-sm sm:text-base">
               <span class="text-modern-accent">Durée du jour</span>
               <span class="font-medium text-modern-secondary">{{ Math.round((weather.sys.sunset - weather.sys.sunrise) / 3600) }}h</span>
             </div>
