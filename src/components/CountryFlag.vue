@@ -193,6 +193,13 @@ const countryName = computed(() => {
 
   return countries[props.countryCode] || props.countryCode;
 });
+
+function handleImageError(event: Event) {
+  const target = event.target as HTMLImageElement;
+  if (target) {
+    target.style.display = 'none';
+  }
+}
 </script>
 
 <template>
@@ -206,7 +213,7 @@ const countryName = computed(() => {
       :class="sizeClasses"
       class="object-cover border rounded-sm shadow-sm border-white/20"
       loading="lazy"
-      @error="$event.target.style.display = 'none'"
+      @error="handleImageError"
     />
     <span class="text-xs font-medium text-modern-secondary sm:text-sm">
       {{ countryCode }}
