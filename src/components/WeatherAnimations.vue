@@ -120,17 +120,16 @@ function animateCloud(cloud: HTMLElement) {
   });
 }
 
-// Soleil avec rayons animés
+// Soleil avec animations simples
 function createSun() {
   const sun = document.createElement("div");
   sun.className = "sun-modern";
 
-  // Rayons du soleil
-  for (let i = 0; i < 8; i++) {
+  // Création de 6 rayons simples
+  for (let i = 0; i < 6; i++) {
     const ray = document.createElement("div");
     ray.className = "sun-ray-modern";
-    ray.style.transform = `rotate(${i * 45}deg)`;
-    ray.style.animationDelay = `${i * 0.2}s`;
+    ray.style.transform = `rotate(${i * 60}deg)`;
     sun.appendChild(ray);
   }
 
