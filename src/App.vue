@@ -89,8 +89,8 @@ onMounted(() => {
     <!-- Barre de navigation moderne -->
     <nav class="sticky top-0 z-50">
       <div class="absolute inset-0 glass-nav"></div>
-      <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div class="relative flex items-center justify-between h-16">
+      <div class="relative">
+        <div class="flex items-center justify-between h-16 px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <div
             class="flex items-center space-x-4"
             :class="{ 'hidden sm:flex': isSearchOpen }"
@@ -150,37 +150,15 @@ onMounted(() => {
           <div
             class="flex items-center space-x-4 overflow-visible"
             :class="{
-              'absolute inset-x-0 top-0 h-16 px-4 sm:px-6 lg:px-8 glass-nav justify-between sm:relative sm:h-auto sm:px-0 sm:bg-transparent': true,
-              'translate-y-0 opacity-100': isSearchOpen,
-              'translate-y-[-100%] opacity-0 pointer-events-none sm:translate-y-0 sm:opacity-100 sm:pointer-events-auto':
-                !isSearchOpen,
+              'sm:relative sm:h-auto sm:bg-transparent': true,
+              'translate-y-0 opacity-100': !isSearchOpen,
+              'translate-y-0 opacity-100 sm:translate-y-0 sm:opacity-100': true,
             }"
           >
-            <button
-              @click="isSearchOpen = false"
-              class="p-2 transition-all duration-300 rounded-xl glass-button text-modern-primary sm:hidden hover-lift"
-              v-if="isSearchOpen"
-            >
-              <svg
-                class="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-
             <div
               class="relative flex-1 transition-all duration-300 ease-in-out transform sm:w-96"
               :class="{
-                'scale-100 opacity-100': isSearchOpen,
-                'scale-95 opacity-0 sm:scale-100 sm:opacity-100': !isSearchOpen,
+                'scale-100 opacity-100': true,
               }"
             >
               <input
@@ -225,6 +203,81 @@ onMounted(() => {
                 "
                 class="absolute w-full p-3 mt-2 text-gray-600 rounded-xl glass-suggestion animate-fade-in"
                 style="max-width: inherit; z-index: 9999"
+              >
+                Aucune ville trouvée
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Version mobile de la recherche -->
+        <div
+          v-if="isSearchOpen"
+          class="absolute inset-x-0 top-0 z-60 h-16 glass-nav sm:hidden"
+        >
+          <div class="flex items-center h-16 px-4 space-x-4">
+            <button
+              @click="isSearchOpen = false"
+              class="p-2 transition-all duration-300 rounded-xl glass-button text-modern-primary hover-lift"
+            >
+              <svg
+                class="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            <div class="relative flex-1">
+              <input
+                v-model="searchQuery"
+                @input="searchCities(searchQuery)"
+                @keyup.enter="getWeather(searchQuery)"
+                @blur="hideSuggestions"
+                @focus="showSuggestions = true"
+                type="text"
+                placeholder="Entrez une ville..."
+                class="w-full px-4 py-2 rounded-xl glass-input focus:outline-none focus:ring-2 focus:ring-white/30 focus:border-white/50 transition-all duration-300"
+              />
+
+              <div
+                v-if="showSuggestions && suggestions.length > 0"
+                class="absolute w-full mt-2 overflow-hidden rounded-xl glass-suggestion animate-slide-in-up"
+                style="z-index: 9999"
+              >
+                <button
+                  v-for="city in suggestions"
+                  :key="city.code"
+                  @click="selectCity(city)"
+                  class="w-full px-4 py-3 text-left transition-all duration-200 border-b border-gray-100/20 hover:bg-white/10 last:border-none hover-lift"
+                >
+                  <div class="flex flex-col">
+                    <span class="font-medium text-gray-800">
+                      {{ city.nom }}
+                      <span class="ml-1 text-sm text-gray-600"
+                        >({{ city.codeDepartement }})</span
+                      >
+                    </span>
+                    <span class="text-sm text-gray-600">
+                      {{ city.departement.nom }} - {{ city.region.nom }}
+                    </span>
+                  </div>
+                </button>
+              </div>
+
+              <div
+                v-else-if="
+                  searchQuery && suggestions.length === 0 && showSuggestions
+                "
+                class="absolute w-full p-3 mt-2 text-gray-600 rounded-xl glass-suggestion animate-fade-in"
+                style="z-index: 9999"
               >
                 Aucune ville trouvée
               </div>
