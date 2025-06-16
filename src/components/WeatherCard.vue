@@ -186,7 +186,7 @@ onMounted(getForecast);
 <template>
   <div class="space-y-6">
     <!-- Carte principale -->
-    <div class="p-6 shadow-lg text-modern-primary glass-card rounded-2xl hover-lift">
+    <div class="p-6 shadow-lg text-modern-primary glass-card rounded-2xl">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-2xl font-bold sm:text-3xl">{{ weather.name }}</h2>
         <span class="px-3 py-1 text-sm rounded-full bg-white/20 text-modern-secondary">{{ weather.sys.country }}</span>
@@ -272,7 +272,7 @@ onMounted(getForecast);
     </div>
 
     <!-- Prévisions 24h -->
-    <div class="p-6 overflow-hidden shadow-lg text-modern-primary glass-card rounded-2xl hover-lift">
+    <div class="p-6 overflow-hidden shadow-lg text-modern-primary glass-card rounded-2xl">
       <div class="flex items-center justify-between mb-6">
         <h3 class="text-xl font-semibold">Prévisions 24h</h3>
 
@@ -315,7 +315,7 @@ onMounted(getForecast);
         <div
           v-for="item in forecast"
           :key="item.dt"
-          class="flex-none w-[140px] sm:w-[170px] p-4 rounded-xl bg-white/10 snap-start hover-lift transition-all duration-300"
+          class="flex-none w-[140px] sm:w-[170px] p-4 rounded-xl bg-white/10 snap-start transition-all duration-300"
         >
           <div class="mb-3 text-center text-modern-secondary">
             {{ formatHour(item.dt_txt) }}
@@ -335,7 +335,7 @@ onMounted(getForecast);
     </div>
 
     <!-- Prévisions 7 jours -->
-    <div class="p-6 shadow-lg text-modern-primary glass-card rounded-2xl hover-lift">
+    <div class="p-6 shadow-lg text-modern-primary glass-card rounded-2xl">
       <div class="flex items-center justify-between mb-6">
         <h3 class="text-xl font-semibold">Prévisions 7 jours</h3>
 
@@ -378,7 +378,7 @@ onMounted(getForecast);
         <div
           v-for="item in dailyForecast"
           :key="item.dt"
-          class="flex-none w-[170px] sm:w-[210px] p-4 rounded-xl bg-white/10 hover-lift transition-all duration-300"
+          class="flex-none w-[170px] sm:w-[210px] p-4 rounded-xl bg-white/10 transition-all duration-300"
         >
           <div class="flex flex-col items-center mb-3 sm:flex-row sm:justify-between">
             <div class="text-base font-medium capitalize text-modern-secondary">{{ formatDay(item.dt) }}</div>
@@ -412,7 +412,7 @@ onMounted(getForecast);
 
     <!-- Conditions atmosphériques -->
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-      <div class="p-6 shadow-lg text-modern-primary glass-card rounded-2xl hover-lift">
+      <div class="p-6 shadow-lg text-modern-primary glass-card rounded-2xl">
         <h3 class="mb-6 text-xl font-semibold">Conditions atmosphériques</h3>
         <div class="space-y-4">
           <div class="p-4 rounded-xl bg-white/10">
@@ -463,7 +463,7 @@ onMounted(getForecast);
       </div>
 
       <!-- Vent et ensoleillement -->
-      <div class="p-6 shadow-lg text-modern-primary glass-card rounded-2xl hover-lift">
+      <div class="p-6 shadow-lg text-modern-primary glass-card rounded-2xl">
         <h3 class="mb-6 text-xl font-semibold">Vent et ensoleillement</h3>
         <div class="space-y-4">
           <div class="p-4 rounded-xl bg-white/10">
